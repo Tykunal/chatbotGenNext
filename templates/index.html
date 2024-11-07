@@ -2,32 +2,198 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Helpdesk Chatbot</title>
-    <script>
-        async function sendMessage() {
-            const message = document.getElementById('message').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-
-            const response = await fetch('http://127.0.0.1:5000/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message, email, phone })
-            });
-            const data = await response.json();
-
-            // Display bot reply
-            document.getElementById('chatBox').innerHTML += `<p><strong>Bot:</strong> ${data.reply}</p>`;
-            document.getElementById('message').value = '';  // Clear input field
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        /* Floating button */
+        .chatbot-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-    </script>
+
+        /* Chat window */
+        .chatbot-window {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+        }
+
+        /* Chat window header */
+        .chatbot-header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+
+        /* Chat messages area */
+        .chatbot-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        /* Chat input */
+        .chatbot-input {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+        }
+
+        .chatbot-input button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>Helpdesk Chatbot</h1>
-    <div id="chatBox"></div>
-    <input type="email" id="email" placeholder="Enter your email" required />
-    <input type="text" id="phone" placeholder="Enter your phone number" required />
-    <input type="text" id="message" placeholder="Type your message..." />
-    <button onclick="sendMessage()">Send</button>
+    <!-- Floating Button -->
+    <div class="chatbot-button" onclick="toggleChatbot()">💬</div>
+
+    <!-- Chatbot Window -->
+    <div class="chatbot-window" id="chatbot-window">
+        <div class="chatbot-header">Chatbot</div>
+        <div class="chatbot-messages" id="chatbot-messages">
+            <!-- Messages will appear here -->
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="user-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const messagesDiv = document.getElementById("chatbot-messages");
+        const userInput = document.getElementById("user-input");
+        const sendBtn = document.querySelector(".chatbot-input button");
+
+        let sessionId = Math.random().toString(36).substr(2, 9); // Unique session id
+        let isUserRegistered = false;
+
+        // Toggle chat window visibility
+        function toggleChatbot() {
+            const chatbotWindow = document.getElementById("chatbot-window");
+            chatbotWindow.style.display = chatbotWindow.style.display === "none" ? "flex" : "none";
+        }
+
+        // Send message when button is clicked
+        function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (userMessage === "") return;
+
+            addMessage(userMessage, "user-message");
+            userInput.value = "";
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+
+            // Simulate server processing
+            setTimeout(() => {
+                processMessage(userMessage);
+            }, 1000);
+        }
+
+        // Handle key press (enter key sends message)
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
+        // Process user message (simulate response)
+        function processMessage(userMessage) {
+            // Simulate a response
+            const botReply = "I am processing your message: " + userMessage;
+            addMessage(botReply, "bot-message");
+
+            // If user is not registered, ask for their details
+            if (!isUserRegistered) {
+                requestUserDetails();
+            } else {
+                // Further conversation logic
+            }
+
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+        }
+
+        // Add message to the chat window
+        function addMessage(message, type) {
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message", type);
+            messageElement.textContent = message;
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Start a conversation
+        function startChat() {
+            addMessage("Hello! I'm your Helpdesk bot. How can I assist you today?", "bot-message");
+        }
+
+        // Request user details (email, phone, name)
+        function requestUserDetails() {
+            if (!isUserRegistered) {
+                addMessage("Please provide your email address.", "bot-message");
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+
+                sendBtn.onclick = () => {
+                    const email = userInput.value;
+                    addMessage(`Your email: ${email}`, "user-message");
+                    userInput.value = "";
+
+                    addMessage("Please provide your phone number.", "bot-message");
+                    sendBtn.onclick = () => {
+                        const phone = userInput.value;
+                        addMessage(`Your phone number: ${phone}`, "user-message");
+                        userInput.value = "";
+
+                        addMessage("Please provide your name.", "bot-message");
+                        sendBtn.onclick = () => {
+                            const name = userInput.value;
+                            addMessage(`Your name: ${name}`, "user-message");
+                            userInput.value = "";
+
+                            // You can add further steps like saving details or sending to backend
+                            addMessage("Thank you for providing your details. You are now registered!", "bot-message");
+                            isUserRegistered = true; // Mark the user as registered
+                        };
+                    };
+                };
+            }
+        }
+
+        // Initialize chat when page loads
+        window.onload = startChat;
+    </script>
 </body>
 </html>

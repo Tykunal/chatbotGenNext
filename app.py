@@ -1,53 +1,31 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
+import csv
 import random
 import json
-import csv
 import torch
-import re
 from model import NeuralNet
 from nltk_utils import bag_of_words, tokenize
 
 app = Flask(__name__)
 CORS(app)
 
+# Load model and intents
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-# Load model and intents data
 with open('intents.json', 'r') as json_data:
     intents = json.load(json_data)
-
-FILE = "data.pth"
-data = torch.load(FILE)
-
+data = torch.load("data.pth")
 input_size = data["input_size"]
 hidden_size = data["hidden_size"]
 output_size = data["output_size"]
 all_words = data['all_words']
 tags = data['tags']
 model_state = data["model_state"]
-
 model = NeuralNet(input_size, hidden_size, output_size).to(device)
 model.load_state_dict(model_state)
 model.eval()
 
-ticket_counter = 1  # Initialize ticket counter
-bot_name = "Helpdesk"
-
-# Initialize ticket counter
-def initialize_ticket_counter(filename):
-    try:
-        with open(filename, mode='r') as file:
-            reader = csv.reader(file)
-            tickets = [row[0] for row in reader if row]
-            ticket_numbers = [int(re.search(r'\d+', ticket).group()) for ticket in tickets if re.search(r'\d+', ticket)]
-            return max(ticket_numbers, default=0) + 1
-    except FileNotFoundError:
-        return 1
-
-ticket_counter = initialize_ticket_counter('tickets.csv')
-
-# Check if user is registered
+# Helper functions for user registration and ticket checking
 def check_user_registration(email, phone):
     with open('userdetails.csv', mode='r') as file:
         reader = csv.DictReader(file)
@@ -56,52 +34,82 @@ def check_user_registration(email, phone):
                 return row
     return None
 
-# Check if ticket already exists
-def ticket_exists(user_id, application, problem_type):
-    with open('tickets.csv', mode='r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            if (row['User ID'] == user_id and row['Application'] == application and row['Problem Type'] == problem_type):
-                return True
-    return False
+def register_user(details):
+    with open('userdetails.csv', mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(details)
 
-# Route to handle chat messages from the frontend
+# State to manage user registration
+user_states = {}
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @app.route('/chat', methods=['POST'])
 def chat():
-    global ticket_counter
-    
-    # Retrieve JSON data from frontend request
-    data = request.json
-    email = data.get('email')
-    phone = data.get('phone')
-    user_message = data.get('message')
+    data = request.get_json()
+    session_id = data.get("session_id")
+    message = data.get("message")
 
-    # Check user registration
-    user_info = check_user_registration(email, phone)
-    if not user_info:
-        return jsonify({"reply": "You are not registered. Please register first."})
+    # Initialize state if new session
+    if session_id not in user_states:
+        user_states[session_id] = {"step": "email"}
 
-    # Process the message
-    sentence_tokens = tokenize(user_message)
-    X = bag_of_words(sentence_tokens, all_words)
-    X = X.reshape(1, X.shape[0])
-    X = torch.from_numpy(X).to(device)
+    state = user_states[session_id]
 
-    output = model(X)
-    _, predicted = torch.max(output, dim=1)
-    tag = tags[predicted.item()]
-    probs = torch.softmax(output, dim=1)
-    prob = probs[0][predicted.item()]
+    # Step-by-step registration process
+    if state["step"] == "email":
+        state["email"] = message
+        state["step"] = "phone"
+        return jsonify({"reply": "Please enter your phone number."})
 
-    if prob.item() > 0.75:
-        # Generate bot response based on intent
-        for intent in intents['intents']:
-            if tag == intent["tag"]:
-                response = random.choice(intent['responses'])
-                return jsonify({"reply": response, "ticket_suggestion": "Would you like to raise a ticket?"})
-    else:
-        return jsonify({"reply": "I couldn't understand your issue. Would you like to raise a ticket for support?"})
+    elif state["step"] == "phone":
+        state["phone"] = message
+        user_info = check_user_registration(state["email"], state["phone"])
+        if user_info:
+            state["step"] = "chat"
+            state["user_info"] = user_info
+            return jsonify({"reply": f"Welcome back {user_info['Name']}! How can I assist you today?"})
+        else:
+            state["step"] = "register_name"
+            return jsonify({"reply": "You are not registered. Please enter your name to register."})
 
-# Run the Flask app
+    elif state["step"] == "register_name":
+        state["name"] = message
+        state["step"] = "register_user_id"
+        return jsonify({"reply": "Please enter your User ID."})
+
+    elif state["step"] == "register_user_id":
+        state["user_id"] = message
+        state["step"] = "register_application"
+        return jsonify({"reply": "Please enter your application (Pensire, Vastuteq, or Procu)."})
+
+    elif state["step"] == "register_application":
+        state["application"] = message
+        register_user([state["email"], state["phone"], state["name"], state["user_id"], state["application"]])
+        state["step"] = "chat"
+        return jsonify({"reply": f"Thank you {state['name']}, you are now registered! How can I help you?"})
+
+    # Chat function logic after registration
+    elif state["step"] == "chat":
+        sentence_tokens = tokenize(message)
+        X = bag_of_words(sentence_tokens, all_words)
+        X = X.reshape(1, X.shape[0])
+        X = torch.from_numpy(X).to(device)
+        output = model(X)
+        _, predicted = torch.max(output, dim=1)
+        tag = tags[predicted.item()]
+        probs = torch.softmax(output, dim=1)
+        prob = probs[0][predicted.item()]
+
+        if prob.item() > 0.75:
+            for intent in intents['intents']:
+                if tag == intent["tag"]:
+                    response = random.choice(intent['responses'])
+                    return jsonify({"reply": response})
+        else:
+            return jsonify({"reply": "I'm not sure I understand. Can you please rephrase?"})
+
 if __name__ == '__main__':
     app.run(debug=True)
