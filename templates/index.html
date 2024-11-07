@@ -96,7 +96,6 @@
         const userInput = document.getElementById("user-input");
         const sendBtn = document.querySelector(".chatbot-input button");
 
-        let sessionId = Math.random().toString(36).substr(2, 9); // Unique session id
         let isUserRegistered = false;
 
         // Toggle chat window visibility
@@ -115,12 +114,37 @@
             userInput.disabled = true;
             sendBtn.disabled = true;
 
-            // Simulate server processing
-            setTimeout(() => {
-                processMessage(userMessage);
-            }, 1000);
-            // userInput.disabled = false;
-            // sendBtn.diabled = false;
+            // Send user message to backend
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userMessage, sessionId: "unique_session_id" })  // Ensure sessionId is passed
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.reply) {
+                    addMessage(data.reply, "bot-message");
+                } else {
+                    addMessage("Error: No response from server.", "bot-message");
+                }
+
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+
+                // If user is not registered, ask for their details
+                if (!isUserRegistered) {
+                    requestUserDetails();
+                }
+            })
+            .catch(error => {
+                addMessage("Error: Unable to connect to server.", "bot-message");
+                console.error("Error:", error);
+
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+            });
         }
 
         // Handle key press (enter key sends message)
@@ -128,23 +152,6 @@
             if (event.key === "Enter") {
                 sendMessage();
             }
-        }
-
-        // Process user message (simulate response)
-        function processMessage(userMessage) {
-            // Simulate a response
-            const botReply = "I am processing your message: " + userMessage;
-            addMessage(botReply, "bot-message");
-
-            // If user is not registered, ask for their details
-            if (!isUserRegistered) {
-                requestUserDetails();
-            } else {
-                // Further conversation logic
-            }
-
-            userInput.disabled = false;
-            sendBtn.disabled = false;
         }
 
         // Add message to the chat window
@@ -165,36 +172,48 @@
         function requestUserDetails() {
             if (!isUserRegistered) {
                 addMessage("Please provide your email address.", "bot-message");
-                userInput.disabled = false;
-                sendBtn.disabled = false;
-
+                
                 sendBtn.onclick = () => {
-                    const email = userInput.value;
+                    const email = userInput.value.trim();
                     addMessage(`Your email: ${email}`, "user-message");
                     userInput.value = "";
 
                     addMessage("Please provide your phone number.", "bot-message");
                     sendBtn.onclick = () => {
-                        const phone = userInput.value;
+                        const phone = userInput.value.trim();
                         addMessage(`Your phone number: ${phone}`, "user-message");
                         userInput.value = "";
 
                         addMessage("Please provide your name.", "bot-message");
                         sendBtn.onclick = () => {
-                            const name = userInput.value;
+                            const name = userInput.value.trim();
                             addMessage(`Your name: ${name}`, "user-message");
                             userInput.value = "";
-                            // You can add further steps like saving details or sending to backend
-                            addMessage("Thank you for providing your details. You are now registered!", "bot-message");
-                            isUserRegistered = true; // Mark the user as registered
+
+                            // Save user details to backend
+                            fetch('/registerUser', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ email, phone, name })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    isUserRegistered = true;
+                                    addMessage("You are now registered! You can start chatting.", "bot-message");
+                                } else {
+                                    addMessage("Sorry, there was an error registering your details.", "bot-message");
+                                }
+                            });
                         };
                     };
                 };
             }
         }
 
-        // Initialize chat when page loads
-        window.onload = startChat;
+        startChat();  // Start the chat when the page loads
     </script>
 </body>
 </html>
