@@ -119,6 +119,8 @@
             setTimeout(() => {
                 processMessage(userMessage);
             }, 1000);
+            // userInput.disabled = false;
+            // sendBtn.diabled = false;
         }
 
         // Handle key press (enter key sends message)
@@ -182,7 +184,6 @@
                             const name = userInput.value;
                             addMessage(`Your name: ${name}`, "user-message");
                             userInput.value = "";
-
                             // You can add further steps like saving details or sending to backend
                             addMessage("Thank you for providing your details. You are now registered!", "bot-message");
                             isUserRegistered = true; // Mark the user as registered

@@ -49,7 +49,7 @@ def index():
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
-    session_id = data.get("session_id")
+    session_id = data.get("sessionId")  # Note the change to match front end
     message = data.get("message")
 
     # Initialize state if new session
