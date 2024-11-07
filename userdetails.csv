@@ -1,0 +1,13 @@
+Email,Phone,Name,User ID,Application
+user1@example.com,1234567890,Ramesh,1001,Pensire
+user2@example.com,0987654321,Suresh,1002,Vasturea
+user3@example.com,5678901234,Mahesh,1003,Procu
+newmail123@gmail.com,5566778844,kratos,121,vasturea
+abc,789,Utpal,7289,"pensire, vastuteq"
+ut,90,utpal,7766,"pensire, procu"
+jnk,890,Trial,4556,"pensire, procu"
+wdcec,erc,rizwan,123,vastuteq
+kunal@gmail.com,9911337343,Kunal Tyagi,tykunal@12,pensire
+tykunal,tykunal,pensire
+,,KUnal,tykunal,pensire
+,,kunal,tykunal,procu

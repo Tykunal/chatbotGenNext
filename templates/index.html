@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Helpdesk Chatbot</title>
+    <script>
+        async function sendMessage() {
+            const message = document.getElementById('message').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+
+            const response = await fetch('http://127.0.0.1:5000/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message, email, phone })
+            });
+            const data = await response.json();
+
+            // Display bot reply
+            document.getElementById('chatBox').innerHTML += `<p><strong>Bot:</strong> ${data.reply}</p>`;
+            document.getElementById('message').value = '';  // Clear input field
+        }
+    </script>
+</head>
+<body>
+    <h1>Helpdesk Chatbot</h1>
+    <div id="chatBox"></div>
+    <input type="email" id="email" placeholder="Enter your email" required />
+    <input type="text" id="phone" placeholder="Enter your phone number" required />
+    <input type="text" id="message" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+</body>
+</html>

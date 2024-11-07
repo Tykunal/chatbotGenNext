@@ -1,0 +1,166 @@
+{
+  "intents": [
+    {
+      "tag": "registration_issue",
+      "patterns": [
+        "I am having trouble registering",
+        "Registration form is not working",
+        "I didn't receive a verification email",
+        "Why can't I sign up?",
+        "The registration page is too slow",
+        "I cannot submit my details",
+        "There is an error while registering",
+        "How do I create an account?",
+        "I can't verify my account",
+        "I'm stuck on the registration page"
+      ],
+      "responses": [
+        "Please try refreshing the page and check your internet connection.",
+        "Ensure all fields are filled correctly before submitting.",
+        "If you haven't received a verification email, check your spam folder.",
+        "Try clearing your browser cache and attempt again.",
+        "Apologies for the inconvenience! Please try again later.",
+        "You can reach out to our support team for further assistance.",
+        "Try a different browser or device and see if it works.",
+        "Make sure your email address is correct during registration.",
+        "Contact support if the problem persists.",
+        "Thank you for your patience! We are looking into the issue."
+      ]
+    },
+    {
+      "tag": "login_issue",
+      "patterns": [
+        "I can't log in",
+        "The login page is not working",
+        "I forgot my password",
+        "How do I reset my password?",
+        "I can't log in with Google",
+        "Unable to log into my account",
+        "Why can't I access my account?",
+        "I'm locked out of my account",
+        "Login form keeps giving errors",
+        "I can’t log in with Facebook"
+      ],
+      "responses": [
+        "Please ensure your username and password are correct.",
+        "Use the 'Forgot Password' option to reset your password.",
+        "If using social login, ensure your account permissions are granted.",
+        "Try clearing your browser cache and attempt to log in again.",
+        "For security reasons, please check your email for account lockouts.",
+        "If your account is locked, contact support for assistance.",
+        "Make sure you're using the correct login credentials.",
+        "Try accessing the site from a different device or browser.",
+        "If the problem continues, reach out to support.",
+        "We're sorry for the trouble! Please try again or get help from support."
+      ]
+    },
+    {
+      "tag": "payment_issue",
+      "patterns": [
+        "My payment was declined",
+        "I can't complete the payment",
+        "Why did my payment fail?",
+        "How do I update my payment details?",
+        "Unable to process payment",
+        "Payment page is not working",
+        "My card is not being accepted",
+        "How do I change my payment method?",
+        "I didn't receive a payment confirmation",
+        "Can I pay with a different method?"
+      ],
+      "responses": [
+        "Please check if your card details are correct.",
+        "Try using a different payment method or card.",
+        "Ensure that you have sufficient funds in your account.",
+        "If payment fails, contact your bank or card issuer.",
+        "You can update your payment details from your account settings.",
+        "Please refresh the page and attempt the payment again.",
+        "Make sure you're entering valid billing information.",
+        "If you didn’t receive a confirmation, wait a few minutes and check your email.",
+        "Contact support if your payment issue persists.",
+        "We're here to help with any payment-related concerns!"
+      ]
+    },
+    {
+      "tag": "subscription_issue",
+      "patterns": [
+        "I can't subscribe",
+        "How do I subscribe to a plan?",
+        "The subscription process is not working",
+        "I want to upgrade my subscription",
+        "How do I change my subscription?",
+        "Unable to cancel my subscription",
+        "I can't choose the subscription plan",
+        "How do I manage my subscription?",
+        "Why can’t I unsubscribe?",
+        "I want to switch to a different plan"
+      ],
+      "responses": [
+        "Please try selecting your plan again and ensure all details are correct.",
+        "You can manage your subscription from your account settings.",
+        "To upgrade or change your subscription, follow the instructions in your profile.",
+        "If you're unable to register or cancel, reach out to support for assistance.",
+        "Try refreshing the page and starting the subscription process again.",
+        "Make sure you’ve selected the correct plan and payment method.",
+        "Contact our support team for help with subscription changes.",
+        "We're sorry for the trouble! Please try again or get help from support.",
+        "You can unsubscribe easily from your account settings.",
+        "Need more assistance with your subscription? We're here to help!"
+      ]
+    },
+    {
+      "tag": "account_management_issue",
+      "patterns": [
+        "I can't update my account details",
+        "How do I change my email?",
+        "Unable to update my profile",
+        "I can't change my password",
+        "How do I edit my account info?",
+        "I can't access my account settings",
+        "How do I delete my account?",
+        "I want to update my personal information",
+        "Why can’t I save my changes?",
+        "The account settings page is not working"
+      ],
+      "responses": [
+        "Make sure all fields are filled out correctly before saving changes.",
+        "You can update your account details from the settings page.",
+        "If the changes aren't saving, try clearing your browser cache.",
+        "Ensure you're entering a valid email address and password.",
+        "Try refreshing the page and attempting again.",
+        "If the problem continues, contact our support team for help.",
+        "For account deletion, please follow the instructions on the settings page.",
+        "We're here to help with any issues you have updating your profile.",
+        "Make sure your connection is stable and retry the changes.",
+        "Thank you for your patience! We're working to resolve the issue."
+      ]
+    },
+    {
+      "tag": "support_issue",
+      "patterns": [
+        "I need help with my account",
+        "How do I contact support?",
+        "I can't find support options",
+        "I need to talk to someone for help",
+        "How do I get assistance?",
+        "I have an issue with my account",
+        "How do I reach customer service?",
+        "I need support for a technical issue",
+        "Can I talk to support?",
+        "How do I find the help section?"
+      ],
+      "responses": [
+        "You can reach support through the 'Contact Us' section on our website.",
+        "Please visit our help center for common issues and solutions.",
+        "Feel free to reach out to our support team via email or chat.",
+        "We're here to assist you! Let us know your issue.",
+        "For immediate help, contact our support team via live chat.",
+        "If you're unable to find support options, please email us directly.",
+        "We apologize for the inconvenience! We're available to help.",
+        "Check the FAQ section for quick answers to common problems.",
+        "Support is just a click away! Contact us for assistance.",
+        "Our support team is here to resolve any issues you're facing."
+      ]
+    }
+  ]
+}
