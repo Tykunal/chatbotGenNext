@@ -5,6 +5,7 @@ import json
 import torch
 from model import NeuralNet
 from nltk_utils import bag_of_words, tokenize
+import csv
 
 app = Flask(__name__)
 CORS(app)
@@ -59,10 +60,42 @@ def register_user():
     email = data.get("email")
     phone = data.get("phone")
     name = data.get("name")
+    application = data.get("application")
+    userid = data.get("userid")
 
     # Register user (this could be saving to a database or session for example)
-    user_states[email] = {"step": "chat", "phone": phone, "name": name}
+    # user_states[email] = {"step": "chat", "phone": phone, "name": name}
+    with open('userdetails.csv', mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([email, phone, name, user_id, application])
+
     return jsonify({"success": True})
+
+@app.route('/checkUser', methods=['POST'])
+def check_user():
+    email = data.get("email")
+    phone = data.get("phone")
+
+    # user_states[email] = {"step": "chat", "phone": phone, "name": name}
+    with open('userdetails.csv', mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['Email'] == email and row['Phone'] == phone:
+                return jsonify({
+                    "success": True,
+                    "name": row['Name'],
+                    "application": row['Application'],
+                    "status": "Found"
+                })
+
+    # If user not found, return an appropriate response
+    return jsonify({
+        "success": False,
+        "message": "User not found",
+        "status": "Not Found"
+    })
+    
+
 
 if __name__ == '__main__':
     app.run(debug=True)

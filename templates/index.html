@@ -162,7 +162,24 @@
             messagesDiv.appendChild(messageElement);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
-
+        function checkUserRegistration(email, phone){
+            fetch('/checkUser', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ email, phone })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    isUserRegistered = true;
+                                    addMessage(`Welcome Back! ${data.name} , you're working on ${data.application}`, "bot-message");
+                                } else {
+                                    addMessage(`Sorry, ${data.message}`, "bot-message");
+                                }
+                            });
+        }
         // Start a conversation
         function startChat() {
             addMessage("Hello! I'm your Helpdesk bot. How can I assist you today?", "bot-message");
@@ -183,7 +200,21 @@
                         const phone = userInput.value.trim();
                         addMessage(`Your phone number: ${phone}`, "user-message");
                         userInput.value = "";
-
+                    
+                    checkUserRegistration(email,phone);
+                    if(!isUserRegistered){
+                        addMessage("Please select application (Pensire, Vastuteq, Procu):", "bot-message");
+                        sendBtn.onclick = () => {
+                            const application= userInput.value.trim();
+                            addMessage(`Your Application: ${application}`, "user-message");
+                            userInput.value = "";
+                    
+                        addMessage("Please enter your userid:", "bot-message");
+                        sendBtn.onclick = () => {
+                            const userid= userInput.value.trim();
+                            addMessage(`Your id: ${userid}`, "user-message");
+                            userInput.value = "";
+                    
                         addMessage("Please provide your name.", "bot-message");
                         sendBtn.onclick = () => {
                             const name = userInput.value.trim();
@@ -196,7 +227,7 @@
                                 headers: {
                                     'Content-Type': 'application/json'
                                 },
-                                body: JSON.stringify({ email, phone, name })
+                                body: JSON.stringify({ email, phone, name, userid, application })
                             })
                             .then(response => response.json())
                             .then(data => {
@@ -209,6 +240,9 @@
                             });
                         };
                     };
+                };
+            };
+        };
                 };
             }
         }
