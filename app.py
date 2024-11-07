@@ -33,7 +33,8 @@ def chat():
     session_id = data.get("sessionId")
     message = data.get("message")
 
-    if session_id not in user_states or user_states[session_id]["step"] != "chat":
+    # Check if user is registered
+    if session_id not in user_states or user_states[session_id].get("step") != "chat":
         return jsonify({"reply": "Please complete registration first."})
 
     sentence_tokens = tokenize(message)
@@ -63,20 +64,22 @@ def register_user():
     application = data.get("application")
     userid = data.get("userid")
 
-    # Register user (this could be saving to a database or session for example)
-    # user_states[email] = {"step": "chat", "phone": phone, "name": name}
+    # Save user details to a CSV file
     with open('userdetails.csv', mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([email, phone, name, user_id, application])
+        writer.writerow([email, phone, name, userid, application])
+
+    # Mark user as registered in the session
+    user_states[email] = {"step": "chat", "name": name, "application": application}
 
     return jsonify({"success": True})
 
 @app.route('/checkUser', methods=['POST'])
 def check_user():
+    data = request.get_json()
     email = data.get("email")
     phone = data.get("phone")
 
-    # user_states[email] = {"step": "chat", "phone": phone, "name": name}
     with open('userdetails.csv', mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
@@ -84,18 +87,14 @@ def check_user():
                 return jsonify({
                     "success": True,
                     "name": row['Name'],
-                    "application": row['Application'],
-                    "status": "Found"
+                    "application": row['Application']
                 })
 
-    # If user not found, return an appropriate response
+    # User not found
     return jsonify({
         "success": False,
-        "message": "User not found",
-        "status": "Not Found"
+        "message": "User not found"
     })
-    
-
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -115,7 +115,7 @@
             sendBtn.disabled = true;
 
             // Send user message to backend
-            fetch('/chat', {
+            fetch('http://127.0.0.1:5000/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -163,7 +163,7 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
         function checkUserRegistration(email, phone){
-            fetch('/checkUser', {
+            fetch('http://127.0.0.1:5000/checkUser', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json'
@@ -222,7 +222,7 @@
                             userInput.value = "";
 
                             // Save user details to backend
-                            fetch('/registerUser', {
+                            fetch('http://127.0.0.1:5000/registerUser', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json'
