@@ -30,12 +30,15 @@ user_states = {}
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
-    session_id = data.get("sessionId")
+    # session_id = data.get("sessionId")
     message = data.get("message")
-
-    # Check if user is registered
-    if session_id not in user_states or user_states[session_id].get("step") != "chat":
-        return jsonify({"reply": "Please complete registration first."})
+    registered = data.get("isUserRegistered")
+    # # Check if user is registered
+    if not registered:
+        return jsonify({"reply": "Please complete Login/Registration First."})
+       
+    # if session_id not in user_states or user_states[session_id].get("step") != "chat":
+    #     return jsonify({"reply": "Please complete registration first."})
 
     sentence_tokens = tokenize(message)
     X = bag_of_words(sentence_tokens, all_words)
