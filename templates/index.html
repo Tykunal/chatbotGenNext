@@ -173,9 +173,11 @@
         .then(response => response.json())
         .then(data => {
         if (data.success) {
+            isUserRegistered = true;
             addMessage(`Welcome Back! ${data.name}, you're working on ${data.application}`, "bot-message");
             return true;
         } else {
+            isUserRegistered = false;
             addMessage(`Sorry, ${data.message}`, "bot-message");
             return false;
         }
@@ -203,7 +205,8 @@
                 addMessage(`Your phone number: ${phone}`, "user-message");
             });
 
-            isUserRegistered = await checkUserRegistration(email, phone);
+            await checkUserRegistration(email, phone);
+            // console.log(isUserRegistered)
             // addMessage(isUserRegistered, "user")
             if (!isUserRegistered) {
                 addMessage("Please select application (Pensire, Vastuteq, Procu):", "bot-message");
