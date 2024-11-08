@@ -1,262 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chatbot</title>
     <style>
-        /* Floating button */
-        .chatbot-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #007bff;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+      /* Floating button */
+      .chatbot-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #007bff;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
 
-        /* Chat window */
-        .chatbot-window {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 300px;
-            height: 400px;
-            border-radius: 8px;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            display: none;
-            flex-direction: column;
-        }
+      /* Chat window */
+      .chatbot-window {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 300px;
+        height: 400px;
+        border-radius: 8px;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        display: none;
+        flex-direction: column;
+      }
 
-        /* Chat window header */
-        .chatbot-header {
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            border-radius: 8px 8px 0 0;
-            text-align: center;
-        }
+      /* Chat window header */
+      .chatbot-header {
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+      }
 
-        /* Chat messages area */
-        .chatbot-messages {
-            flex: 1;
-            padding: 10px;
-            overflow-y: auto;
-        }
+      /* Chat messages area */
+      .chatbot-messages {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+      }
 
-        /* Chat input */
-        .chatbot-input {
-            display: flex;
-            border-top: 1px solid #ddd;
-        }
+      /* Chat input */
+      .chatbot-input {
+        display: flex;
+        border-top: 1px solid #ddd;
+      }
 
-        .chatbot-input input {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            outline: none;
-        }
+      .chatbot-input input {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        outline: none;
+      }
 
-        .chatbot-input button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-        }
+      .chatbot-input button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Floating Button -->
     <div class="chatbot-button" onclick="toggleChatbot()">💬</div>
 
     <!-- Chatbot Window -->
     <div class="chatbot-window" id="chatbot-window">
-        <div class="chatbot-header">Chatbot</div>
-        <div class="chatbot-messages" id="chatbot-messages">
-            <!-- Messages will appear here -->
-        </div>
-        <div class="chatbot-input">
-            <input type="text" id="user-input" placeholder="Type a message...">
-            <button onclick="sendMessage()">Send</button>
-        </div>
+      <div class="chatbot-header">Chatbot</div>
+      <div class="chatbot-messages" id="chatbot-messages">
+        <!-- Messages will appear here -->
+      </div>
+      <div class="chatbot-input">
+        <input type="text" id="user-input" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
     </div>
 
     <script>
-        const messagesDiv = document.getElementById("chatbot-messages");
-        const userInput = document.getElementById("user-input");
-        const sendBtn = document.querySelector(".chatbot-input button");
-        let isChatbotOpened = false;
-        let isUserRegistered = false;
+      const messagesDiv = document.getElementById("chatbot-messages");
+      const userInput = document.getElementById("user-input");
+      const sendBtn = document.querySelector(".chatbot-input button");
+      let isChatbotOpened = false;
+      let isUserRegistered = false;
 
-        function toggleChatbot() {
-            const chatbotWindow = document.getElementById("chatbot-window");
-            chatbotWindow.style.display = chatbotWindow.style.display === "none" ? "flex" : "none";
-            if (!isChatbotOpened && chatbotWindow.style.display === "flex") {
-                isChatbotOpened = true;
-                startChat();
-            }
+      function toggleChatbot() {
+        const chatbotWindow = document.getElementById("chatbot-window");
+        chatbotWindow.style.display =
+          chatbotWindow.style.display === "none" ? "flex" : "none";
+        if (!isChatbotOpened && chatbotWindow.style.display === "flex") {
+          isChatbotOpened = true;
+          startChat();
         }
+      }
 
-        // Send message when button is clicked
-        async function sendMessage() {
-            const userMessage = userInput.value.trim();
-            if (userMessage === "") return;
+      // Send message when button is clicked
+      async function sendMessage() {
+        const userMessage = userInput.value.trim();
+        if (userMessage === "") return;
 
-            addMessage(userMessage, "user-message");
-            userInput.value = "";
-            userInput.disabled = true;
-            sendBtn.disabled = true;
+        addMessage(userMessage, "user-message");
+        userInput.value = "";
+        userInput.disabled = true;
+        sendBtn.disabled = true;
 
-            // Send user message to backend
-            await fetch('http://127.0.0.1:5000/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: userMessage, isUserRegistered })  
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.reply) {
-                    addMessage(data.reply, "bot-message");
-                } else {
-                    addMessage("Error: No response from server.", "bot-message");
-                }
-
-                userInput.disabled = false;
-                sendBtn.disabled = false;
-
-                // If user is not registered, ask for their details
-                if (!isUserRegistered) {
-                    requestUserDetails();
-                }
-            })
-            .catch(error => {
-                addMessage("Error: Unable to connect to server.", "bot-message");
-                console.error("Error:", error);
-
-                // userInput.disabled = false;
-                sendBtn.disabled = false;
-            });
-        }
-
-        userInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                sendBtn.click(); 
-            }
-        });
-        // Add message to the chat window
-        function addMessage(message, type) {
-            const messageElement = document.createElement("div");
-            messageElement.classList.add("message", type);
-            messageElement.textContent = message;
-            messagesDiv.appendChild(messageElement);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-    async function checkUserRegistration(email, phone) {
-        await fetch('http://127.0.0.1:5000/checkUser', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ email, phone })
+        // Send user message to backend
+        await fetch("http://127.0.0.1:5000/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: userMessage,
+            isUserRegistered,
+          }),
         })
-        .then(response => response.json())
-        .then(data => {
-        if (data.success) {
-            isUserRegistered = true;
-            addMessage(`Welcome Back! ${data.name}, you're working on ${data.application}`, "bot-message");
-            return true;
-        } else {
-            isUserRegistered = false;
-            addMessage(`Sorry, ${data.message}`, "bot-message");
-            return false;
-        }
-    });
-}
-        // Start a conversation
-        function startChat() {
-            addMessage("Hello! I'm your Helpdesk bot. How can I assist you today?", "bot-message");
-        }
+          .then((response) => response.json())
+          .then(async (data) => {
+            if (data.reply) {
+              addMessage(data.reply, "bot-message");
 
-        // Request user details (email, phone, name)
-    async function requestUserDetails() {
-        if (!isUserRegistered) {
-            let email, phone, application, userid, name;
+              if (data.question) {
+                addMessage(data.question, "bot-message");
+                const userResponse = await waitForUserInput();
+                addMessage(userResponse, "user-message");
 
-            addMessage("Please provide your email address.", "bot-message");
-            await waitForUserInput().then(input => {
-                email = input.trim();
-                addMessage(`Your email: ${email}`, "user-message");
-            });
-
-            addMessage("Please provide your phone number.", "bot-message");
-            await waitForUserInput().then(input => {
-                phone = input.trim();
-                addMessage(`Your phone number: ${phone}`, "user-message");
-            });
-
-            await checkUserRegistration(email, phone);
-            // console.log(isUserRegistered)
-            // addMessage(isUserRegistered, "user")
-            if (!isUserRegistered) {
-                addMessage("Please select application (Pensire, Vastuteq, Procu):", "bot-message");
-                await waitForUserInput().then(input => {
-                    application = input.trim();
-                    addMessage(`Your Application: ${application}`, "user-message");
-                });
-
-                addMessage("Please enter your userid:", "bot-message");
-                await waitForUserInput().then(input => {
-                    userid = input.trim();
-                    addMessage(`Your id: ${userid}`, "user-message");
-                });
-
-                addMessage("Please provide your name.", "bot-message");
-                await waitForUserInput().then(input => {
-                    name = input.trim();
-                    addMessage(`Your name: ${name}`, "user-message");
-                });
-
-                // Save user details to backend
-                await fetch('http://127.0.0.1:5000/registerUser', {
-                    method: 'POST',
+                if (userResponse.toLowerCase() === "yes") {
+                  // Raise a ticket
+                  await fetch("http://127.0.0.1:5000/raiseTicket", {
+                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                      "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ email, phone, name, userid, application })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        isUserRegistered = true;
-                        addMessage("You are now registered! You can start chatting.", "bot-message");
-                    } else {
-                        addMessage("Sorry, there was an error registering your details.", "bot-message");
-                    }
+                    body: JSON.stringify({
+                      tag: data.tag,
+                      description: userMessage,
+                    }),
+                  })
+                    .then((response) => response.json())
+                    .then((ticketData) => {
+                      addMessage(ticketData.reply, "bot-message");
+                    })
+                    .catch((error) => {
+                      addMessage(
+                        "Error: Unable to raise ticket.",
+                        "bot-message"
+                      );
+                      console.error("Error:", error);
+                    });
+                } else {
+                  addMessage(
+                    "Hope your problem is solved. Thanks for visiting!",
+                    "bot-message"
+                  );
+                }
+              }
+            } else {
+              addMessage("Error: No response from server.", "bot-message");
+            }
+
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+
+            // If user is not registered, ask for their details
+            if (!isUserRegistered) {
+              requestUserDetails();
+            }
+          })
+          .catch((error) => {
+            addMessage("Error: Unable to connect to server.", "bot-message");
+            console.error("Error:", error);
+
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+          });
+      }
+      userInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          sendBtn.click();
+        }
+      });
+      // Add message to the chat window
+      function addMessage(message, type) {
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message", type);
+        messageElement.textContent = message;
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }
+      async function checkUserRegistration(email, phone) {
+        await fetch("http://127.0.0.1:5000/checkUser", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, phone }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              isUserRegistered = true;
+              addMessage(
+                `Welcome Back! ${data.name}, you're working on ${data.application}`,
+                "bot-message"
+              );
+              return true;
+            } else {
+              isUserRegistered = false;
+              addMessage(`Sorry, ${data.message}`, "bot-message");
+              return false;
+            }
+          });
+      }
+      // Start a conversation
+      function startChat() {
+        addMessage(
+          "Hello! I'm your Helpdesk bot. How can I assist you today?",
+          "bot-message"
+        );
+      }
+
+      // Request user details (email, phone, name)
+      async function requestUserDetails() {
+        if (!isUserRegistered) {
+          let email, phone, application, userid, name;
+
+          addMessage("Please provide your email address.", "bot-message");
+          await waitForUserInput().then((input) => {
+            email = input.trim();
+            addMessage(`Your email: ${email}`, "user-message");
+          });
+
+          addMessage("Please provide your phone number.", "bot-message");
+          await waitForUserInput().then((input) => {
+            phone = input.trim();
+            addMessage(`Your phone number: ${phone}`, "user-message");
+          });
+
+          await checkUserRegistration(email, phone);
+          // console.log(isUserRegistered)
+          // addMessage(isUserRegistered, "user")
+          if (!isUserRegistered) {
+            addMessage(
+              "Please select application (Pensire, Vastuteq, Procu):",
+              "bot-message"
+            );
+            await waitForUserInput().then((input) => {
+              application = input.trim();
+              addMessage(`Your Application: ${application}`, "user-message");
+            });
+            // unique id concept
+            let isUniqueId = false;
+            while (!isUniqueId) {
+              addMessage("Please enter a unique userid:", "bot-message");
+              await waitForUserInput().then((input) => {
+                userid = input.trim();
+                addMessage(`Your id: ${userid}`, "user-message");
+              });
+
+              await fetch("http://127.0.0.1:5000/uniqueId", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userid }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.success) {
+                    addMessage(data.message, "bot-message");
+                    isUniqueId = true;
+                  } else {
+                    addMessage(data.message, "bot-message");
+                  }
                 });
             }
-        }
-    }
+            addMessage("Please provide your name.", "bot-message");
+            await waitForUserInput().then((input) => {
+              name = input.trim();
+              addMessage(`Your name: ${name}`, "user-message");
+            });
 
-function waitForUserInput() {
-    return new Promise(resolve => {
-        sendBtn.onclick = () => {
+            // Save user details to backend
+            await fetch("http://127.0.0.1:5000/registerUser", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, phone, name, userid, application }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.success) {
+                  isUserRegistered = true;
+                  addMessage(
+                    "You are now registered! You can start chatting.",
+                    "bot-message"
+                  );
+                } else {
+                  addMessage(
+                    "Sorry, there was an error registering your details.",
+                    "bot-message"
+                  );
+                }
+              });
+          }
+        }
+      }
+
+      function waitForUserInput() {
+        return new Promise((resolve) => {
+          sendBtn.onclick = () => {
             const input = userInput.value.trim();
             userInput.value = "";
             resolve(input);
-        };
-    });
-}
+          };
+        });
+      }
     </script>
-</body>
+  </body>
 </html>
