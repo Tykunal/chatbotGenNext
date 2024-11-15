@@ -78,7 +78,6 @@ def raise_ticket():
     problem_type = data.get("tag")
     description = data.get("description")
 
-    # Check if the ticket already exists
     if ticket_exists(email, application, problem_type):
         return jsonify({"reply": "Ticket already exists, thanks for visiting."})
 
