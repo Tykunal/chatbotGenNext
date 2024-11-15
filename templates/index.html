@@ -217,11 +217,9 @@
                 `Welcome Back! ${data.name}, you're working on ${data.application}`,
                 "bot-message"
               );
-              return true;
             } else {
               isUserRegistered = false;
               addMessage(`Sorry, ${data.message}`, "bot-message");
-              return false;
             }
           });
       }
