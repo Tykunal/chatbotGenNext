@@ -1,5 +1,5 @@
-Ticket Number,User ID,Application,Problem Type,Problem Description,Status
-TICKET-1,1003,Procu,login_issue,The login page is not working,Unresolved
+Ticket Number,User ID,Application,Problem Type,Problem Description,Status,Email
+TICKET-1,1003,Procu,login_issue,The login page is not working,Unresolved,kunal@gmail.com
 TICKET-2,121,vasturea,login_issue,unable to login redirecting back every time,Unresolved
 TICKET-3,121,vasturea,New,khana nhi mil rha,Unresolved
 TICKET-4,4556,procu,login_issue,Login related issue,Unresolved
