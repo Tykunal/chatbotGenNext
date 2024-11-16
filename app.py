@@ -95,7 +95,7 @@ def raise_ticket():
         return '', 200  
     email = ""
     application = ""
-    with open('tickets.csv', mode='r') as file:
+    with open('userdetails.csv', mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
             if row['User_ID'] == currentUser:
@@ -116,7 +116,7 @@ def raise_ticket():
     # Store the ticket information in a CSV file
     with open('tickets.csv', mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([ticket_number, email, application, problem_type, description, "Unresolved"])
+        writer.writerow([ticket_number, currentUser, application, problem_type, description, "Unresolved"])
 
     return jsonify({
         "reply": f"Your ticket is generated and ticket number is {ticket_number}, for application {application}. Thanks for visiting"
@@ -152,6 +152,7 @@ def register_user():
 
 @app.route('/checkUser', methods=['POST'])
 def check_user():
+    global currentUser #unless it will not update the value, since it will be limited to the checkUser function only.
     data = request.get_json()
     email = data.get("email")
     phone = data.get("phone")

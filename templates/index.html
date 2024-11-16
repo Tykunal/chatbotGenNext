@@ -144,7 +144,6 @@
                 addMessage(userResponse, "user-message");
 
                 if (userResponse.toLowerCase() === "yes") {
-                  // Raise a ticket
                   await fetch("http://127.0.0.1:5000/raiseTicket", {
                     method: "POST",
                     headers: {
@@ -179,7 +178,7 @@
 
             userInput.disabled = false;
             sendBtn.disabled = false;
-            
+
             if (!isUserRegistered) {
               requestUserDetails();
             }
@@ -243,31 +242,71 @@
         if (!isUserRegistered) {
           let email, phone, application, userid, name;
 
-          addMessage("Please provide your email address.", "bot-message");
-          await waitForUserInput().then((input) => {
-            email = input.trim();
-            addMessage(`Your email: ${email}`, "user-message");
-          });
+          let isValidEmail = false;
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          while (!isValidEmail) {
+            addMessage("Please provide your email address.", "bot-message");
+            await waitForUserInput().then((input) => {
+              email = input.trim();
+              if (!emailRegex.test(email)) {
+                addMessage(
+                  "Please enter a valid email address (e.g., user@example.com).",
+                  "bot-message"
+                );
+              } else {
+                isValidEmail = true;
+                addMessage(`Your email: ${email}`, "user-message");
+              }
+            });
+          }
 
-          addMessage("Please provide your phone number.", "bot-message");
-          await waitForUserInput().then((input) => {
-            phone = input.trim();
-            addMessage(`Your phone number: ${phone}`, "user-message");
-          });
+          let isValidPhone = false;
+          const phoneRegex = /^\d{10}$/; 
+          while (!isValidPhone) {
+            addMessage("Please provide your phone number:", "bot-message");
+            await waitForUserInput().then((input) => {
+              phone = input.trim();
+              if (!phoneRegex.test(phone)) {
+                addMessage(
+                  "Please enter a valid 10-digit phone number.",
+                  "bot-message"
+                );
+              } else {
+                isValidPhone = true;
+                addMessage(`Your phone number: ${phone}`, "user-message");
+              }
+            });
+          }
 
           await checkUserRegistration(email, phone);
-          // console.log(isUserRegistered);
           sendBtn.onclick = sendMessage;
-          // addMessage(isUserRegistered, "user")
           if (!isUserRegistered) {
-            addMessage(
-              "Please select application (Pensire, Vastuteq, Procu):",
-              "bot-message"
-            );
-            await waitForUserInput().then((input) => {
-              application = input.trim();
-              addMessage(`Your Application: ${application}`, "user-message");
-            });
+            // Choosing correct application ID
+            let isApplication = false;
+            const validApplications = ["pensire", "vastuteq", "procu"];
+            while (!isApplication) {
+              addMessage(
+                "Please select application (Pensire, Vastuteq, Procu):",
+                "bot-message"
+              );
+              await waitForUserInput().then((input) => {
+                application = input.trim().toLowerCase();
+
+                if (!validApplications.includes(application)) {
+                  isApplication = false;
+                  addMessage(
+                    "Please choose a valid application ID (Pensire, Vastuteq, Procu)!",
+                    "bot-message"
+                  );
+                } else {
+                  isApplication = true;
+                  addMessage(
+                    `Your Application: ${application}`,
+                    "user-message"
+                  );
+                }
+              });
+            }
             // unique id concept
             let isUniqueId = false;
             while (!isUniqueId) {
@@ -294,11 +333,23 @@
                   }
                 });
             }
-            addMessage("Please provide your name.", "bot-message");
-            await waitForUserInput().then((input) => {
-              name = input.trim();
-              addMessage(`Your name: ${name}`, "user-message");
-            });
+            let isValidName = false;
+            const nameRegex = /^[a-zA-Z\s-]+$/;
+            while (!isValidName) {
+              addMessage("Please provide your name.", "bot-message");
+              await waitForUserInput().then((input) => {
+                name = input.trim();
+                if (!nameRegex.test(name)) {
+                  addMessage(
+                    "Please enter a valid name (letters, spaces, or hyphens only).",
+                    "bot-message"
+                  );
+                } else {
+                  isValidName = true;
+                  addMessage(`Your name: ${name}`, "user-message");
+                }
+              });
+            }
 
             // Save user details to backend
             await fetch("http://127.0.0.1:5000/registerUser", {
