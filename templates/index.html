@@ -110,9 +110,10 @@
 
       // Send message when button is clicked
       async function sendMessage() {
+        // console.log("Send Message function is getting called.");
         const userMessage = userInput.value.trim();
         if (userMessage === "") return;
-
+        // console.log("UserMessage: ", userMessage);
         addMessage(userMessage, "user-message");
         userInput.value = "";
         userInput.disabled = true;
@@ -136,7 +137,10 @@
 
               if (data.question) {
                 addMessage(data.question, "bot-message");
+                userInput.disabled = false;
+                sendBtn.disabled = false;
                 const userResponse = await waitForUserInput();
+                console.log("UserResponse inside the chat", userResponse);
                 addMessage(userResponse, "user-message");
 
                 if (userResponse.toLowerCase() === "yes") {
@@ -175,8 +179,7 @@
 
             userInput.disabled = false;
             sendBtn.disabled = false;
-
-            // If user is not registered, ask for their details
+            
             if (!isUserRegistered) {
               requestUserDetails();
             }
@@ -204,25 +207,29 @@
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
       }
       async function checkUserRegistration(email, phone) {
-        await fetch("http://127.0.0.1:5000/checkUser", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, phone }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              isUserRegistered = true;
-              addMessage(
-                `Welcome Back! ${data.name}, you're working on ${data.application}`,
-                "bot-message"
-              );
-            } else {
-              isUserRegistered = false;
-              addMessage(`Sorry, ${data.message}`, "bot-message");
-            }
+        try {
+          const response = await fetch("http://127.0.0.1:5000/checkUser", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, phone }),
           });
+          const data = await response.json();
+          if (data.success) {
+            isUserRegistered = true;
+            addMessage(
+              `Welcome Back! ${data.name}, you're working on ${data.application}`,
+              "bot-message"
+            );
+            addMessage("What may i help you with today?", "bot-message");
+          } else {
+            isUserRegistered = false;
+            addMessage(`Sorry, ${data.message}`, "bot-message");
+          }
+        } catch (error) {
+          console.error("Error checking user registration:", error);
+        }
       }
+
       // Start a conversation
       function startChat() {
         addMessage(
@@ -249,7 +256,8 @@
           });
 
           await checkUserRegistration(email, phone);
-          // console.log(isUserRegistered)
+          // console.log(isUserRegistered);
+          sendBtn.onclick = sendMessage;
           // addMessage(isUserRegistered, "user")
           if (!isUserRegistered) {
             addMessage(
@@ -308,6 +316,8 @@
                     "You are now registered! You can start chatting.",
                     "bot-message"
                   );
+                  addMessage("What may i help you with today?", "bot-message");
+                  sendBtn.onclick = sendMessage;
                 } else {
                   addMessage(
                     "Sorry, there was an error registering your details.",
@@ -323,6 +333,7 @@
         return new Promise((resolve) => {
           sendBtn.onclick = () => {
             const input = userInput.value.trim();
+            console.log("User input received:", input); // Debugging
             userInput.value = "";
             resolve(input);
           };

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import random
 import json
 import torch
@@ -8,7 +8,11 @@ from nltk_utils import bag_of_words, tokenize
 import csv
 
 app = Flask(__name__)
-CORS(app)
+# Allow CORS for all domains on all routes
+CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:3000"}})  
+
+# before situation
+# CORS(app)
 currentUser = ""
 
 # Load model and intents
@@ -63,8 +67,32 @@ def chat():
             "tag": "New"
         })
 
-@app.route('/raiseTicket', methods=['POST'])
+def get_last_ticket_number():
+    last_ticket_number = 0 
+
+    try:
+        with open('tickets.csv', mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                last_ticket_number = row['Ticket Number']  # Get the ticket number from the last row
+            
+        if last_ticket_number:
+            last_ticket_number = int(last_ticket_number.split('-')[-1])
+        else:
+            last_ticket_number = 0 
+
+    except FileNotFoundError:
+        last_ticket_number = 0
+        
+    return last_ticket_number + 1
+
+
+@app.route('/raiseTicket', methods=['POST', 'OPTIONS'])
+@cross_origin()
+# @cross_origin(origin='http://127.0.0.1:3000')
 def raise_ticket():
+    if request.method == 'OPTIONS':
+        return '', 200  
     email = ""
     application = ""
     with open('tickets.csv', mode='r') as file:
@@ -81,8 +109,9 @@ def raise_ticket():
     if ticket_exists(email, application, problem_type):
         return jsonify({"reply": "Ticket already exists, thanks for visiting."})
 
-    ticket_number = f"TICKET-{ticket_counter}"
-    ticket_counter += 1
+    newTicketNumber = get_last_ticket_number();
+    ticket_number = f"TICKET-{newTicketNumber}"
+    # ticket_counter += 1
 
     # Store the ticket information in a CSV file
     with open('tickets.csv', mode='a', newline='') as file:
@@ -100,6 +129,8 @@ def ticket_exists(email, application, problem_type):
             if row['Email'] == email and row['Application'] == application and row['Problem Type'] == problem_type:
                 return True
     return False
+
+
 @app.route('/registerUser', methods=['POST'])
 def register_user():
     data = request.get_json()
