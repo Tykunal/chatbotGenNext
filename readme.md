@@ -1,13 +1,26 @@
 # Chatbot
-Chat bot for GenNext project that takes applications queries , assign tickets for insuccessfull solutions and update user data in backend
 
-# File structure
-For running the chatbot successfully , please follow this folder/file structure so that you won't face any errors.
--- templates: index.html
--- app.py
--- data.pth
--- intents.json
--- model.py
--- nltk_utils.py
--- ticket.csv
--- userdetails.csv
+A chatbot designed for the **GenNext project** that handles user queries related to applications, assigns tickets for unresolved issues, and updates user data in the backend.
+
+---
+
+## Features
+- **Query Handling**: Efficiently processes user queries and provides appropriate responses.
+- **Ticket Management**: Automatically generates and assigns tickets for issues that cannot be resolved by the chatbot.
+- **Backend Integration**: Updates user information in the backend system.
+
+---
+
+## Prerequisites
+Before running the chatbot, ensure you have the following installed:
+1. **Python** (Version >= 3.8 recommended)
+2. Required Python libraries:
+   - `flask`
+   - `nltk`
+   - `torch`
+   - `pandas`
+   - Any other dependencies mentioned in `requirements.txt` (if available).
+
+Install all dependencies using:
+```bash
+pip install -r requirements.txt
