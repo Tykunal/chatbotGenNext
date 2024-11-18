@@ -93,20 +93,18 @@ def get_last_ticket_number():
 def raise_ticket():
     if request.method == 'OPTIONS':
         return '', 200  
-    email = ""
     application = ""
     with open('userdetails.csv', mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
             if row['User_ID'] == currentUser:
-                email = row["Email"]
                 application = row["Application"]
 
     data = request.get_json()
     problem_type = data.get("tag")
     description = data.get("description")
 
-    if ticket_exists(email, application, problem_type):
+    if ticket_exists():
         return jsonify({"reply": "Ticket already exists, thanks for visiting."})
 
     newTicketNumber = get_last_ticket_number();
@@ -122,11 +120,11 @@ def raise_ticket():
         "reply": f"Your ticket is generated and ticket number is {ticket_number}, for application {application}. Thanks for visiting"
     })
 
-def ticket_exists(email, application, problem_type):
+def ticket_exists():
     with open('tickets.csv', mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
-            if row['Email'] == email and row['Application'] == application and row['Problem Type'] == problem_type:
+            if row['User_ID'] == currentUser:
                 return True
     return False
 
