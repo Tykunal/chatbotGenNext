@@ -5,136 +5,133 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chatbot</title>
     <style>
-    /* Floating button remains the same */
-    .chatbot-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #007bff;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+      /* Floating button remains the same */
+      .chatbot-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #007bff;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
 
-        /* Chat window */
-        .chatbot-window {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 350px; /* Increased width for better message layout */
-            height: 450px; /* Increased height for better message layout */
-            border-radius: 8px;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            display: none;
-            flex-direction: column;
-        }
+      /* Chat window */
+      .chatbot-window {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 350px; /* Increased width for better message layout */
+        height: 450px; /* Increased height for better message layout */
+        border-radius: 8px;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        display: none;
+        flex-direction: column;
+      }
 
-        /* Chat window header */
-        .chatbot-header {
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            border-radius: 8px 8px 0 0;
-            text-align: center;
-        }
+      /* Chat window header */
+      .chatbot-header {
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+      }
 
-         /* Chat messages area */
-        .chatbot-messages {
-            flex: 1;
-            padding: 10px;
-            overflow-y: auto;
-            display: flex; /* Enable flexbox for message alignment */
-            flex-direction: column; /* Arrange messages vertically */
-        }
+      /* Chat messages area */
+      .chatbot-messages {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        display: flex; /* Enable flexbox for message alignment */
+        flex-direction: column; /* Arrange messages vertically */
+      }
 
-        /* Individual message container */
-        .message {
-            margin-bottom: 8px;
-            padding: 8px 12px;
-            border-radius: 15px; /* Rounded corners for messages */
-            max-width: 70%; /* Message takes up to 70% width */
-        }
+      /* Individual message container */
+      .message {
+        margin-bottom: 8px;
+        padding: 8px 12px;
+        border-radius: 15px; /* Rounded corners for messages */
+        max-width: 70%; /* Message takes up to 70% width */
+      }
 
-        /* Bot messages (left-aligned) */
-         .bot-message {
-             background-color: #f0f0f0; /* Light grey background */
-             color: #333; /* Dark text */
-             align-self: flex-start; /* Align to the left */
-             position: relative;
-              margin-left: 25px;
-              margin-top: 10px;
+      /* Bot messages (left-aligned) */
+      .bot-message {
+        background-color: #f0f0f0; /* Light grey background */
+        color: #333; /* Dark text */
+        align-self: flex-start; /* Align to the left */
+        position: relative;
+        margin-left: 25px;
+        margin-top: 10px;
+      }
+      .bot-message::before {
+        content: "Bot";
+        position: absolute;
+        top: -15px; /* Adjust as needed */
+        left: 2px;
+        font-size: 0.7em;
+        color: #999;
+      }
 
-         }
-         .bot-message::before {
-           content: 'Bot';
-           position: absolute;
-           top: -15px; /* Adjust as needed */
-           left: 2px;
-           font-size: 0.7em;
-           color: #999;
-         }
+      /* User messages (right-aligned) */
+      .user-message {
+        background-color: #007bff; /* Blue background */
+        color: white; /* White text */
+        align-self: flex-end; /* Align to the right */
+        position: relative;
+        margin-right: 25px;
+        margin-top: 10px;
+      }
+      .user-message::before {
+        content: "You";
+        position: absolute;
+        top: -25px;
+        right: 2px;
+        font-size: 0.7em;
+        color: #999;
+        padding-top: 5px;
+      }
+      /* Chat input */
+      .chatbot-input {
+        display: flex;
+        border-top: 1px solid #ddd;
+        padding: 10px 0; /* Added padding */
+      }
 
+      .chatbot-input input {
+        flex: 1;
+        padding: 8px; /* Adjust padding */
+        border: 1px solid #ccc; /* Add border */
+        border-radius: 5px 0 0 5px; /* Rounded left corners */
+        outline: none; /* Remove default outline */
+        margin-right: -1px; /* Remove extra space between input and button */
+      }
 
-        /* User messages (right-aligned) */
-        .user-message {
-            background-color: #007bff; /* Blue background */
-            color: white; /* White text */
-            align-self: flex-end; /* Align to the right */
-            position: relative;
-            margin-right: 25px;
-            margin-top: 10px;
-        }
-        .user-message::before{
-          content: 'You';
-          position: absolute;
-          top: -25px;
-          right: 2px;
-          font-size: 0.7em;
-          color: #999;
-           padding-top: 5px;
+      .chatbot-input button {
+        background-color: #007bff;
+        color: white;
+        border: none; /* Removed border */
+        padding: 8px 15px; /* Adjust padding */
+        cursor: pointer;
+        border-radius: 0 5px 5px 0; /* Rounded right corners */
+        white-space: nowrap; /* Prevent button text from wrapping */
+        /* Added transition for a smooth effect */
+        transition: background-color 0.3s ease;
+      }
 
-        }
-        /* Chat input */
-        .chatbot-input {
-            display: flex;
-            border-top: 1px solid #ddd;
-            padding: 10px 0; /* Added padding */
-        }
-
-        .chatbot-input input {
-            flex: 1;
-            padding: 8px; /* Adjust padding */
-            border: 1px solid #ccc; /* Add border */
-            border-radius: 5px 0 0 5px; /* Rounded left corners */
-            outline: none; /* Remove default outline */
-            margin-right: -1px; /* Remove extra space between input and button */
-        }
-
-        .chatbot-input button {
-            background-color: #007bff;
-            color: white;
-            border: none; /* Removed border */
-            padding: 8px 15px; /* Adjust padding */
-            cursor: pointer;
-            border-radius: 0 5px 5px 0; /* Rounded right corners */
-            white-space: nowrap; /* Prevent button text from wrapping */
-            /* Added transition for a smooth effect */
-            transition: background-color 0.3s ease;
-        }
-
-        /* Button hover effect */
-        .chatbot-input button:hover {
-          background-color: #0056b3; /* Darker blue on hover */
-          }
-  </style>
+      /* Button hover effect */
+      .chatbot-input button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+      }
+    </style>
   </head>
   <body>
     <!-- Floating Button -->
@@ -196,15 +193,60 @@
             if (data.reply) {
               addMessage(data.reply, "bot-message");
 
+              // Check if there is a question in the response
               if (data.question) {
                 addMessage(data.question, "bot-message");
+
+                // Enable user input to get the response
                 userInput.disabled = false;
                 sendBtn.disabled = false;
+
                 const userResponse = await waitForUserInput();
                 console.log("UserResponse inside the chat", userResponse);
                 addMessage(userResponse, "user-message");
 
                 if (userResponse.toLowerCase() === "yes") {
+                  // Call the raiseTicket API
+                  await fetch("http://127.0.0.1:5000/raiseTicket", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      tag: data.tag,
+                      description: userMessage,
+                    }),
+                  })
+                    .then((response) => response.json())
+                    .then((ticketData) => {
+                      addMessage(ticketData.reply, "bot-message");
+                    })
+                    .catch((error) => {
+                      addMessage(
+                        "Error: Unable to raise ticket.",
+                        "bot-message"
+                      );
+                      console.error("Error:", error);
+                    });
+                } else {
+                  addMessage(
+                    "Hope your problem is solved. Thanks for visiting!",
+                    "bot-message"
+                  );
+                }
+              } else if(isUserRegistered) {
+                // Scenario we still raise the ticket based on user confirmation.
+
+                // Ask the user if they want to raise a ticket
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+
+                const userResponse = await waitForUserInput();
+                console.log("UserResponse after no question", userResponse);
+                addMessage(userResponse, "user-message");
+
+                if (userResponse.toLowerCase() === "yes") {
+                  // Call the raiseTicket API
                   await fetch("http://127.0.0.1:5000/raiseTicket", {
                     method: "POST",
                     headers: {
@@ -322,7 +364,7 @@
           }
 
           let isValidPhone = false;
-          const phoneRegex = /^\d{10}$/; 
+          const phoneRegex = /^\d{10}$/;
           while (!isValidPhone) {
             addMessage("Please provide your phone number:", "bot-message");
             await waitForUserInput().then((input) => {
