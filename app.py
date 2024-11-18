@@ -124,7 +124,7 @@ def ticket_exists(problem_type):
     with open('tickets.csv', mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
-            if row['User_ID'] == currentUser and row['problem_type'] == problem_type:
+            if row['User_ID'] == currentUser and row['Problem_Type'] == problem_type:
                 return True
     return False
 
