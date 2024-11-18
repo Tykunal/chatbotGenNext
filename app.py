@@ -104,7 +104,7 @@ def raise_ticket():
     problem_type = data.get("tag")
     description = data.get("description")
 
-    if ticket_exists():
+    if ticket_exists(problem_type):
         return jsonify({"reply": "Ticket already exists, thanks for visiting."})
 
     newTicketNumber = get_last_ticket_number();
@@ -120,11 +120,11 @@ def raise_ticket():
         "reply": f"Your ticket is generated and ticket number is {ticket_number}, for application {application}. Thanks for visiting"
     })
 
-def ticket_exists():
+def ticket_exists(problem_type):
     with open('tickets.csv', mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
-            if row['User_ID'] == currentUser:
+            if row['User_ID'] == currentUser and row['problem_type'] == problem_type:
                 return True
     return False
 
