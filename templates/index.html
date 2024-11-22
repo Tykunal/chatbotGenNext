@@ -134,6 +134,10 @@
     </style>
   </head>
   <body>
+    <h1>Chatbot</h1>
+    <a id="adminButton" href="http://127.0.0.1:5000/admin" >View Tickets</a>
+    <!-- <button id="adminButton" onclick="fetchTickets()">View Tickets</button> -->
+    <!-- <a href="fullIntegration/templates/admin.html">View Tickets</a> -->
     <!-- Floating Button -->
     <div class="chatbot-button" onclick="toggleChatbot()">💬</div>
 
@@ -234,7 +238,7 @@
                     "bot-message"
                   );
                 }
-              } else if(isUserRegistered) {
+              } else if (isUserRegistered) {
                 // Scenario we still raise the ticket based on user confirmation.
 
                 // Ask the user if they want to raise a ticket
@@ -492,6 +496,34 @@
             resolve(input);
           };
         });
+      }
+      // admin portal access
+      async function fetchTickets() {
+        try {
+          const response = await fetch("http://127.0.0.1:5000/admin");
+          const data = await response.json(); // Ensure you're getting the response as JSON
+          const tickets = data.tickets; // Extract the tickets array from the response
+
+          console.log(tickets);
+
+          if (tickets && tickets.length > 0) {
+            addMessage("Here are the tickets:", "bot-message");
+
+            tickets.forEach((ticket) => {
+              // Create a string to display all ticket fields
+              const ticketDetails = Object.entries(ticket)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(", ");
+
+              addMessage(ticketDetails, "bot-message");
+            });
+          } else {
+            addMessage("No tickets found.", "bot-message");
+          }
+        } catch (error) {
+          console.error("Error fetching tickets:", error);
+          addMessage("Error: Unable to fetch tickets.", "bot-message");
+        }
       }
     </script>
   </body>

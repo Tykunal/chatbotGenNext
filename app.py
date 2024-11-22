@@ -14,6 +14,7 @@ CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:3000"}})
 # before situation
 # CORS(app)
 currentUser = ""
+adminList = ["tykunal@12"]
 
 # Load model and intents
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -104,8 +105,9 @@ def raise_ticket():
     problem_type = data.get("tag")
     description = data.get("description")
 
-    if ticket_exists(problem_type):
-        return jsonify({"reply": "Ticket already exists, thanks for visiting."})
+    ticket,status = ticket_exists(problem_type)
+    if ticket:
+        return jsonify({"reply": f"Your {ticket} already exists with Status {status}, thanks for visiting."})
 
     newTicketNumber = get_last_ticket_number();
     ticket_number = f"TICKET-{newTicketNumber}"
@@ -125,8 +127,8 @@ def ticket_exists(problem_type):
         reader = csv.DictReader(file)
         for row in reader:
             if row['User_ID'] == currentUser and row['Problem_Type'] == problem_type:
-                return True
-    return False
+                return row['Ticket Number'], row['Status']
+    return None
 
 
 @app.route('/registerUser', methods=['POST'])
@@ -192,7 +194,20 @@ def unique_id():
         "message": "UserId accepted!"
     })
 
+@app.route('/admin', methods=['GET'])
+@cross_origin()
+def admin():
+    if currentUser in adminList: 
+        tickets = [] 
+        with open('tickets.csv', mode='r') as file:
+            reader = csv.DictReader(file)  
+            for row in reader:
+                tickets.append(row) 
 
+        # return render_template("admin.html", tickets=tickets)
+        return jsonify({"tickets": tickets})  
+    else:
+        return jsonify({"error": "Unauthorized access"}), 403 
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <script>
+      async function fetchTickets() {
+        try {
+          const response = await fetch("http://127.0.0.1:5000/admin");
+          const data = await response.json(); // Ensure you're getting the response as JSON
+          const tickets = data.tickets; // Extract the tickets array from the response
+          console.log(tickets);
+
+          const ticketsContainer = document.getElementById("tickets-container");
+          ticketsContainer.innerHTML = ""; // Clear any existing tickets
+
+          if (tickets && tickets.length > 0) {
+            tickets.forEach((ticket) => {
+              // Create a string to display all ticket fields
+              const ticketDetails = Object.entries(ticket)
+                .map(([key, value]) => `<strong>${key}</strong>: ${value}`)
+                .join("<br>");
+              
+              // Create a div for each ticket
+              const ticketDiv = document.createElement("div");
+              ticketDiv.innerHTML = `<p>${ticketDetails}</p>`;
+              ticketsContainer.appendChild(ticketDiv);
+            });
+          } else {
+            ticketsContainer.innerHTML = "<p>No tickets found.</p>";
+          }
+        } catch (error) {
+          console.error("Error fetching tickets:", error);
+          document.getElementById("tickets-container").innerHTML = "<p>Error: Unable to fetch tickets.</p>";
+        }
+      }
+    </script>
+</head>
+<body>
+    <h1>Admin Page</h1>
+    <button onclick="fetchTickets()">Fetch Tickets</button>
+    <div id="tickets-container">
+        <!-- Ticket details will be displayed here -->
+    </div>
+</body>
+</html>
