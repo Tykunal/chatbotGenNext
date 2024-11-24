@@ -122,32 +122,112 @@
         padding: 8px 15px; /* Adjust padding */
         cursor: pointer;
         border-radius: 0 5px 5px 0; /* Rounded right corners */
-        white-space: nowrap; /* Prevent button text from wrapping */
-        /* Added transition for a smooth effect */
+        white-space: nowrap; 
         transition: background-color 0.3s ease;
       }
 
-      /* Button hover effect */
       .chatbot-input button:hover {
-        background-color: #0056b3; /* Darker blue on hover */
+        background-color: #0056b3; 
       }
       #adminButton {
-        display: none;
+        display: none; 
+        position: absolute;
+        top: 30%; 
+        left: 15px;
+        transform: translateY(-50%);
+        background-color: #ffc107;
+        color: black;
+        text-decoration: none;
+        padding: 8px 15px;
+        font-weight: bold;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      #adminButton:hover {
+        background-color: #e0a800;
+        text-decoration: none;
+        padding: 10px 20px;
+        font-weight: bolder;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      header {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+      }
+
+      /* Redesigned Chatbot Window */
+      .chatbot-window {
+        border: 1px solid #ddd;
+      }
+
+      .bot-message {
+        background-color: #eaf4ff;
+        border-left: 4px solid #007bff;
+      }
+      .user-message {
+        background-color: #0056b3;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Chat Input Styling */
+      .chatbot-input input {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+      }
+
+      .chatbot-input button {
+        background-color: #007bff;
+        transition: background-color 0.2s, transform 0.2s;
+      }
+
+      .chatbot-input button:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
       }
     </style>
   </head>
   <body>
-    <h1>Chatbot</h1>
-    <a id="adminButton" href="http://127.0.0.1:5000/admin">View Tickets</a>
-    <!-- <button id="adminButton" onclick="fetchTickets()">View Tickets</button> -->
-    <!-- <a href="fullIntegration/templates/admin.html">View Tickets</a> -->
+    <header
+      style="
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        padding: 10px;
+      "
+    >
+      <h1>Welcome to Helpdesk Chatbot</h1>
+      <p style="margin: 0; font-size: 0.9em">
+        Your friendly assistant, ready to help you!
+      </p>
+      <a id="adminButton" href="http://127.0.0.1:5000/admin"> View Tickets </a>
+    </header>
 
-    <!-- Floating Button -->
-    <div class="chatbot-button" onclick="toggleChatbot()">💬</div>
+    <!-- Redesigned Floating Button -->
+    <div class="chatbot-button" onclick="toggleChatbot()" title="Open Chat">
+      💬
+    </div>
 
-    <!-- Chatbot Window -->
+    <!-- Redesigned Chatbot Window -->
     <div class="chatbot-window" id="chatbot-window">
-      <div class="chatbot-header">Chatbot</div>
+      <div class="chatbot-header">
+        <span style="font-weight: bold">Helpdesk Bot</span>
+        <button
+          onclick="toggleChatbot()"
+          style="
+            float: right;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+          "
+        >
+          ✖
+        </button>
+      </div>
       <div class="chatbot-messages" id="chatbot-messages">
         <!-- Messages will appear here -->
       </div>
@@ -536,7 +616,7 @@
           .then((data) => {
             const currentUser = data.currentUser;
             if (currentUser) {
-              console.log(currentUser)
+              console.log(currentUser);
               document.getElementById("adminButton").style.display = "block";
             }
           })
