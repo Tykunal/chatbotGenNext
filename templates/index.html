@@ -131,13 +131,17 @@
       .chatbot-input button:hover {
         background-color: #0056b3; /* Darker blue on hover */
       }
+      #adminButton {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <h1>Chatbot</h1>
-    <a id="adminButton" href="http://127.0.0.1:5000/admin" >View Tickets</a>
+    <a id="adminButton" href="http://127.0.0.1:5000/admin">View Tickets</a>
     <!-- <button id="adminButton" onclick="fetchTickets()">View Tickets</button> -->
     <!-- <a href="fullIntegration/templates/admin.html">View Tickets</a> -->
+
     <!-- Floating Button -->
     <div class="chatbot-button" onclick="toggleChatbot()">💬</div>
 
@@ -250,7 +254,6 @@
                 addMessage(userResponse, "user-message");
 
                 if (userResponse.toLowerCase() === "yes") {
-                  // Call the raiseTicket API
                   await fetch("http://127.0.0.1:5000/raiseTicket", {
                     method: "POST",
                     headers: {
@@ -467,7 +470,7 @@
               body: JSON.stringify({ email, phone, name, userid, application }),
             })
               .then((response) => response.json())
-              .then((data) => {
+              .then(async (data) => {
                 if (data.success) {
                   isUserRegistered = true;
                   addMessage(
@@ -476,6 +479,7 @@
                   );
                   addMessage("What may i help you with today?", "bot-message");
                   sendBtn.onclick = sendMessage;
+                  await getUser();
                 } else {
                   addMessage(
                     "Sorry, there was an error registering your details.",
@@ -484,6 +488,7 @@
                 }
               });
           }
+          await getUser();
         }
       }
 
@@ -501,8 +506,8 @@
       async function fetchTickets() {
         try {
           const response = await fetch("http://127.0.0.1:5000/admin");
-          const data = await response.json(); // Ensure you're getting the response as JSON
-          const tickets = data.tickets; // Extract the tickets array from the response
+          const data = await response.json();
+          const tickets = data.tickets;
 
           console.log(tickets);
 
@@ -524,6 +529,20 @@
           console.error("Error fetching tickets:", error);
           addMessage("Error: Unable to fetch tickets.", "bot-message");
         }
+      }
+      async function getUser() {
+        await fetch("http://127.0.0.1:5000/get_currentUser")
+          .then((response) => response.json())
+          .then((data) => {
+            const currentUser = data.currentUser;
+            if (currentUser) {
+              console.log(currentUser)
+              document.getElementById("adminButton").style.display = "block";
+            }
+          })
+          .catch((error) =>
+            console.error("Error fetching currentUser:", error)
+          );
       }
     </script>
   </body>

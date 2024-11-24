@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 from flask_cors import CORS, cross_origin
 import random
 import json
@@ -13,8 +13,10 @@ CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:3000"}})
 
 # before situation
 # CORS(app)
-currentUser = ""
-adminList = ["tykunal@12"]
+
+# currentUser = ""
+adminList = ["tykunal@12", "tykunal@12345"]
+app.secret_key = 'jaishreeram' 
 
 # Load model and intents
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -31,12 +33,18 @@ model = NeuralNet(input_size, hidden_size, output_size).to(device)
 model.load_state_dict(model_state)
 model.eval()
 
-user_states = {}
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
+@app.route('/get_currentUser', methods=['GET'])
+def get_current_user():
+    currentUser = session.get('userid')
+    if currentUser in adminList:
+        current_user = currentUser
+        return jsonify({'currentUser': current_user})
+    return jsonify({'error': 'No current user or unauthorized access'}), 403
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -93,35 +101,34 @@ def get_last_ticket_number():
     return last_ticket_number + 1
 
 
-@app.route('/raiseTicket', methods=['POST', 'OPTIONS'])
-@cross_origin()
-# @cross_origin(origin='http://127.0.0.1:3000')
+@app.route('/raiseTicket', methods=['POST'])
+# @cross_origin()
 def raise_ticket():
-    if request.method == 'OPTIONS':
-        return '', 200  
+    # if request.method == 'OPTIONS':  #added OPTIONS inside methods.
+    #     return '', 200  
     application = ""
     with open('userdetails.csv', mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
-            if row['User_ID'] == currentUser:
+            if row['User_ID'] == session.get('userid'):
                 application = row["Application"]
 
     data = request.get_json()
     problem_type = data.get("tag")
     description = data.get("description")
 
-    ticket,status = ticket_exists(problem_type)
-    if ticket:
+    result = ticket_exists(problem_type)
+    if result is not None:
+        ticket, status = result
         return jsonify({"reply": f"Your {ticket} already exists with Status {status}, thanks for visiting."})
 
     newTicketNumber = get_last_ticket_number();
     ticket_number = f"TICKET-{newTicketNumber}"
-    # ticket_counter += 1
 
     # Store the ticket information in a CSV file
     with open('tickets.csv', mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([ticket_number, currentUser, application, problem_type, description, "Unresolved"])
+        writer.writerow([ticket_number, session['userid'], application, problem_type, description, "Unresolved"])
 
     return jsonify({
         "reply": f"Your ticket is generated and ticket number is {ticket_number}, for application {application}. Thanks for visiting"
@@ -130,6 +137,7 @@ def raise_ticket():
 def ticket_exists(problem_type):
     with open('tickets.csv', mode='r') as file:
         reader = csv.DictReader(file)
+        currentUser = session.get('userid')
         for row in reader:
             if row['User_ID'] == currentUser and row['Problem_Type'] == problem_type:
                 return row['Ticket Number'], row['Status']
@@ -138,6 +146,7 @@ def ticket_exists(problem_type):
 
 @app.route('/registerUser', methods=['POST'])
 def register_user():
+    # global currentUser
     data = request.get_json()
     email = data.get("email")
     phone = data.get("phone")
@@ -145,19 +154,16 @@ def register_user():
     application = data.get("application")
     userid = data.get("userid")
     
-    # Save user details to a CSV file
     with open('userdetails.csv', mode='a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([email, phone, name, userid, application])
 
-    # Mark user as registered in the session
-    user_states[email] = {"step": "chat", "name": name, "application": application}
-
+    session['userid']= userid
     return jsonify({"success": True})
 
 @app.route('/checkUser', methods=['POST'])
 def check_user():
-    global currentUser #unless it will not update the value, since it will be limited to the checkUser function only.
+    # global currentUser #unless it will not update the value, since it will be limited to the checkUser function only.
     data = request.get_json()
     email = data.get("email")
     phone = data.get("phone")
@@ -166,7 +172,7 @@ def check_user():
         reader = csv.DictReader(file)
         for row in reader:
             if row['Email'] == email and row['Phone'] == phone:
-                currentUser = row["User_ID"]
+                session['userid'] = row["User_ID"]
                 return jsonify({
                     "success": True,
                     "name": row['Name'],
@@ -202,7 +208,7 @@ def unique_id():
 @app.route('/admin', methods=['GET'])
 @cross_origin()
 def admin():
-    if currentUser in adminList: 
+    if session['userid'] in adminList: 
         tickets = [] 
         with open('tickets.csv', mode='r') as file:
             reader = csv.DictReader(file)  
