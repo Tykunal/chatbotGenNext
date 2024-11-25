@@ -1,47 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Page</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f9f9f9;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+
+      button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 10px;
+        border: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #007bff;
+        color: white;
+      }
+
+      td {
+        background-color: #fff;
+      }
+
+      tr:hover td {
+        background-color: #f1f1f1;
+      }
+
+      .icon {
+        cursor: pointer;
+        margin: 0 5px;
+        color: #007bff;
+        transition: color 0.2s ease;
+      }
+
+      .icon:hover {
+        color: #0056b3;
+      }
+
+      .no-tickets {
+        text-align: center;
+        color: #555;
+        margin-top: 20px;
+      }
+    </style>
     <script>
       async function fetchTickets() {
         try {
-          const response = await fetch("http://127.0.0.1:5000/admin");
-          const data = await response.json(); // Ensure you're getting the response as JSON
-          const tickets = data.tickets; // Extract the tickets array from the response
-          console.log(tickets);
+          const response = await fetch("http://127.0.0.1:5000/adminData");
+          const tickets = await response.json();
+          
+          console.log(tickets[0]);
 
           const ticketsContainer = document.getElementById("tickets-container");
           ticketsContainer.innerHTML = ""; // Clear any existing tickets
 
           if (tickets && tickets.length > 0) {
+            const table = document.createElement("table");
+
+            // Table headers
+            table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>Ticket Number</th>
+                                <th>User ID</th>
+                                <th>Application</th>
+                                <th>Problem Type</th>
+                                <th>Problem Description</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    `;
+
+            const tbody = table.querySelector("tbody");
+
             tickets.forEach((ticket) => {
-              // Create a string to display all ticket fields
-              const ticketDetails = Object.entries(ticket)
-                .map(([key, value]) => `<strong>${key}</strong>: ${value}`)
-                .join("<br>");
-              
-              // Create a div for each ticket
-              const ticketDiv = document.createElement("div");
-              ticketDiv.innerHTML = `<p>${ticketDetails}</p>`;
-              ticketsContainer.appendChild(ticketDiv);
+              const row = document.createElement("tr");
+
+              // Create cells for each ticket property
+              row.innerHTML = `
+                            <td>${ticket["Ticket Number"]}</td>
+                            <td>${ticket["User_ID"]}</td>
+                            <td>${ticket["Application"]}</td>
+                            <td>${ticket["Problem_Type"]}</td>
+                            <td>${ticket["Problem Description"]}</td>
+                            <td>${ticket["Status"]}</td>
+                            <td>
+                                <span class="icon" onclick="editTicket('${ticket["Ticket Number"]}')">✏️</span>
+                                <span class="icon" onclick="deleteTicket('${ticket["Ticket Number"]}')">🗑️</span>
+                            </td>
+                        `;
+              tbody.appendChild(row);
             });
+
+            ticketsContainer.appendChild(table);
           } else {
-            ticketsContainer.innerHTML = "<p>No tickets found.</p>";
+            ticketsContainer.innerHTML =
+              "<p class='no-tickets'>No tickets found.</p>";
           }
         } catch (error) {
           console.error("Error fetching tickets:", error);
-          document.getElementById("tickets-container").innerHTML = "<p>Error: Unable to fetch tickets.</p>";
+          document.getElementById("tickets-container").innerHTML =
+            "<p class='no-tickets'>Error: Unable to fetch tickets.</p>";
         }
       }
+
+      function editTicket(ticketNumber) {
+        // Add your backend handling logic here
+        alert(`Edit Ticket: ${ticketNumber}`);
+      }
+
+      function deleteTicket(ticketNumber) {
+        // Add your backend handling logic here
+        alert(`Delete Ticket: ${ticketNumber}`);
+      }
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Admin Page</h1>
     <button onclick="fetchTickets()">Fetch Tickets</button>
     <div id="tickets-container">
-        <!-- Ticket details will be displayed here -->
+      <!-- Ticket details will be displayed here -->
     </div>
-</body>
+  </body>
 </html>

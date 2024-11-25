@@ -205,12 +205,10 @@
       <a id="adminButton" href="http://127.0.0.1:5000/admin"> View Tickets </a>
     </header>
 
-    <!-- Redesigned Floating Button -->
     <div class="chatbot-button" onclick="toggleChatbot()" title="Open Chat">
       💬
     </div>
 
-    <!-- Redesigned Chatbot Window -->
     <div class="chatbot-window" id="chatbot-window">
       <div class="chatbot-header">
         <span style="font-weight: bold">Helpdesk Bot</span>
@@ -583,33 +581,33 @@
         });
       }
       // admin portal access
-      async function fetchTickets() {
-        try {
-          const response = await fetch("http://127.0.0.1:5000/admin");
-          const data = await response.json();
-          const tickets = data.tickets;
+      // async function fetchTickets() {
+      //   try {
+      //     const response = await fetch("http://127.0.0.1:5000/adminData");
+      //     const data = await response.json();
+      //     const tickets = data.tickets;
 
-          console.log(tickets);
+      //     console.log(tickets);
 
-          if (tickets && tickets.length > 0) {
-            addMessage("Here are the tickets:", "bot-message");
+      //     if (tickets && tickets.length > 0) {
+      //       addMessage("Here are the tickets:", "bot-message");
 
-            tickets.forEach((ticket) => {
-              // Create a string to display all ticket fields
-              const ticketDetails = Object.entries(ticket)
-                .map(([key, value]) => `${key}: ${value}`)
-                .join(", ");
+      //       tickets.forEach((ticket) => {
+      //         // Create a string to display all ticket fields
+      //         const ticketDetails = Object.entries(ticket)
+      //           .map(([key, value]) => `${key}: ${value}`)
+      //           .join(", ");
 
-              addMessage(ticketDetails, "bot-message");
-            });
-          } else {
-            addMessage("No tickets found.", "bot-message");
-          }
-        } catch (error) {
-          console.error("Error fetching tickets:", error);
-          addMessage("Error: Unable to fetch tickets.", "bot-message");
-        }
-      }
+      //         addMessage(ticketDetails, "bot-message");
+      //       });
+      //     } else {
+      //       addMessage("No tickets found.", "bot-message");
+      //     }
+      //   } catch (error) {
+      //     console.error("Error fetching tickets:", error);
+      //     addMessage("Error: Unable to fetch tickets.", "bot-message");
+      //   }
+      // }
       async function getUser() {
         await fetch("http://127.0.0.1:5000/get_currentUser")
           .then((response) => response.json())

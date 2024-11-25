@@ -205,20 +205,26 @@ def unique_id():
         "message": "UserId accepted!"
     })
 
-@app.route('/admin', methods=['GET'])
-@cross_origin()
+@app.route('/admin')
 def admin():
-    if session['userid'] in adminList: 
-        tickets = [] 
-        with open('tickets.csv', mode='r') as file:
-            reader = csv.DictReader(file)  
-            for row in reader:
-                tickets.append(row) 
+    return render_template('admin.html')
 
-        # return render_template("admin.html", tickets=tickets)
-        return jsonify({"tickets": tickets})  
-    else:
-        return jsonify({"error": "Unauthorized access"}), 403 
+
+@app.route('/adminData', methods=['GET'])
+@cross_origin()
+def adminData():
+    currentUser = session.get('userid')
+    # currentUser = 'tykunal@12345'
+    if currentUser not in adminList:
+        return jsonify({'error': 'Unauthorized access'}), 403
+
+    tickets = []
+    with open('tickets.csv', mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            tickets.append(row)
+
+    return jsonify(tickets)
 
 if __name__ == '__main__':
     app.run(debug=True)
