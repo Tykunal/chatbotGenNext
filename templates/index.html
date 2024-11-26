@@ -594,6 +594,7 @@
             console.error("Error fetching currentUser:", error)
           );
       }
+      window.onload = getUser; //This will keep the button visible if session exists.
     </script>
   </body>
 </html>

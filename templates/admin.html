@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <title>Admin Page</title>
     <style>
       body {
@@ -119,11 +123,15 @@
                                     <td>${ticket["User_ID"]}</td>
                                     <td>${ticket["Application"]}</td>
                                     <td>${ticket["Problem_Type"]}</td>
-                                    <td>${ticket["Problem Description"]}</td>
+                                    <td>${ticket["Problem_Description"]}</td>
                                     <td>${ticket["Status"]}</td>
                                     <td>
-                                        <span class="icon" onclick="editTicket('${ticket["Ticket Number"]}')">✏️</span>
-                                        <span class="icon" onclick="deleteTicket('${ticket["Ticket Number"]}')">🗑️</span>
+                                      <span class="icon" onclick="editTicket('${ticket["Ticket Number"]}')">
+                                        <i class="fas fa-edit"></i> <!-- Edit Icon -->
+                                      </span>
+                                      <span class="icon" onclick="deleteTicket('${ticket["Ticket Number"]}')">
+                                        <i class="fas fa-trash-alt"></i> <!-- Delete Icon -->
+                                      </span>
                                     </td>
                                 `;
               tbody.appendChild(row);
@@ -142,8 +150,9 @@
       }
 
       async function editTicket(ticketNumber) {
-        // Add your backend handling logic here
-        window.location.href = `http://127.0.0.1:5000/edit?ticketNumber=${encodeURIComponent(ticketNumber)}`;
+        window.location.href = `http://127.0.0.1:5000/edit?ticketNumber=${encodeURIComponent(
+          ticketNumber
+        )}`;
       }
 
       async function deleteTicket(ticketNumber) {
@@ -172,11 +181,12 @@
           }
         }
       }
+      fetchTickets();
     </script>
   </head>
   <body>
     <h1>Admin Page</h1>
-    <button onclick="fetchTickets()">Fetch Tickets</button>
+    <!-- <button onclick="fetchTickets()">Fetch Tickets</button> -->
     <div id="tickets-container">
       <!-- Ticket details will be displayed here -->
     </div>

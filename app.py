@@ -255,7 +255,7 @@ def delete_ticket():
 
         # Write the updated tickets back to the CSV file
         with open("tickets.csv", "w", newline="") as file:
-            fieldnames = ["Ticket Number", "User_ID", "Application", "Problem_Type", "Problem Description", "Status"]
+            fieldnames = ["Ticket Number", "User_ID", "Application", "Problem_Type", "Problem_Description", "Status"]
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(updated_tickets)
@@ -293,9 +293,44 @@ def getEditFormData():
       
     
 
-# @app.route('/editTicket', methods=['GET', 'POST'])
-# def editTicket():
+@app.route('/editTicket', methods=['POST'])
+def editTicket():
+    # Parse JSON data from the request
+    data = request.get_json()
+    ticketNumber = data.get("ticketNumber")
+    # description = data.get("problemDescription")
+    # problemType = data.get("problemType")
+    # status = data.get("status")
 
+    if not ticketNumber:
+        return jsonify({"error": "Ticket number is required"}), 400
+
+    updated = False
+    # Read the existing data
+    with open('tickets.csv', mode='r') as file:
+        reader = csv.DictReader(file)
+        rows = list(reader)
+        fieldnames = reader.fieldnames
+
+    with open('tickets.csv', mode='w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            if row['Ticket Number'] == ticketNumber:
+                # Update only fields provided in the request
+                if "problemDescription" in data:
+                    row['Problem_Description'] = data['problemDescription']
+                if "problemType" in data:
+                    row['Problem_Type'] = data['problemType']
+                if "status" in data:
+                    row['Status'] = data['status']
+                updated = True
+            writer.writerow(row)
+
+    if updated:
+        return jsonify({"message": f"{ticketNumber} updated successfully"}), 200
+    else:
+        return jsonify({"error": "Ticket not found"}), 404
 
 
 
