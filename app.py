@@ -207,7 +207,11 @@ def unique_id():
 
 @app.route('/admin')
 def admin():
-    return render_template('admin.html')
+    currentUser = session.get('userid')
+    if currentUser in adminList:
+        return render_template('admin.html')
+    return "Access denied. You are not authorized to view this page.", 403
+
 
 
 @app.route('/adminData', methods=['GET'])
@@ -262,6 +266,35 @@ def delete_ticket():
         return jsonify({"error": "Tickets file not found."}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route('/edit')
+def edit():
+    if session.get('userid') in adminList:
+        return render_template('edit.html')
+    else:
+        return "Access denied. You are not authorized to view this page.", 403
+
+@app.route('/getEditFormData', methods=['POST'])
+def getEditFormData():
+    data = request.get_json()
+    ticketNumber = data.get("ticketNumber")
+    if not ticketNumber:
+        return jsonify({"error": "Ticket number is required"}), 400
+
+    with open('tickets.csv', mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['Ticket Number'] == ticketNumber:
+                row.pop('Ticket Number', None)
+                return jsonify(row), 200
+
+    return jsonify({"error": "Ticket not found"}), 404
+      
+    
+
+# @app.route('/editTicket', methods=['GET', 'POST'])
+# def editTicket():
 
 
 
