@@ -260,8 +260,8 @@
         // console.log("UserMessage: ", userMessage);
         addMessage(userMessage, "user-message");
         userInput.value = "";
-        userInput.disabled = true;
-        sendBtn.disabled = true;
+        // userInput.disabled = true;
+        // sendBtn.disabled = true;
 
         // Send user message to backend
         await fetch("http://127.0.0.1:5000/chat", {

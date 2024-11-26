@@ -7,8 +7,13 @@ from model import NeuralNet
 from nltk_utils import bag_of_words, tokenize
 import csv
 from datetime import timedelta
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
+
 # Allow CORS for all domains on all routes
 CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:3000"}})  
 
@@ -18,7 +23,7 @@ CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:3000"}})
 # currentUser = ""
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=15)
 adminList = ["tykunal@12", "tykunal@12345"]
-app.secret_key = 'jaishreeram' 
+app.secret_key = os.getenv("SECRET_KEY") 
 
 # Load model and intents
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
