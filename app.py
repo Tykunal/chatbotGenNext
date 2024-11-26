@@ -6,6 +6,7 @@ import torch
 from model import NeuralNet
 from nltk_utils import bag_of_words, tokenize
 import csv
+from datetime import timedelta
 
 app = Flask(__name__)
 # Allow CORS for all domains on all routes
@@ -15,6 +16,7 @@ CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:3000"}})
 # CORS(app)
 
 # currentUser = ""
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=15)
 adminList = ["tykunal@12", "tykunal@12345"]
 app.secret_key = 'jaishreeram' 
 
@@ -32,6 +34,12 @@ model_state = data["model_state"]
 model = NeuralNet(input_size, hidden_size, output_size).to(device)
 model.load_state_dict(model_state)
 model.eval()
+
+
+# session route
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
 
 
 @app.route('/')
@@ -158,6 +166,7 @@ def register_user():
         writer = csv.writer(file)
         writer.writerow([email, phone, name, userid, application])
 
+    session.permanent = True
     session['userid']= userid
     return jsonify({"success": True})
 
