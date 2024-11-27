@@ -312,6 +312,7 @@ async function requestUserDetails() {
             addMessage("What may i help you with today?", "bot-message");
             sendBtn.onclick = sendMessage;
             await getUser();
+            document.getElementById("logOutBtn").style.display = "block";
           } else {
             addMessage(
               "Sorry, there was an error registering your details.",
@@ -321,6 +322,7 @@ async function requestUserDetails() {
         });
     }
     await getUser();
+    document.getElementById("logOutBtn").style.display = "block";
   }
 }
 
@@ -340,6 +342,7 @@ async function isLoggedIn() {
     .then((data) => {
       if (data.isLoggedIn) {
         isUserRegistered = true;
+        document.getElementById("logOutBtn").style.display = "block";
       } else {
         isUserRegistered = false;
       }
@@ -358,4 +361,26 @@ async function getUser() {
     })
     .catch((error) => console.error("Error fetching currentUser:", error));
 }
-window.onload = getUser; //This will keep the button visible if session exists.
+async function handleLogOut() {
+  try {
+    const response = await fetch("http://127.0.0.1:5000/logOut");
+
+    if (response.ok) {
+      const data = await response.json();
+      alert(data.message);
+      // Optionally redirect to login page or refresh the page
+      window.location.href = '/';
+    } else {
+      const errorData = await response.json();
+      alert(errorData.error || "Error logging out");
+    }
+  } catch (error) {
+    console.error("Error Logging Out:", error);
+    alert("An unexpected error occurred while logging out.");
+  }
+}
+
+window.onload = async function () {
+  await isLoggedIn();
+  await getUser();
+}; //This will keep the button visible if session exists.

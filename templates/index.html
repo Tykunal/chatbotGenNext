@@ -19,7 +19,10 @@
       <p style="margin: 0; font-size: 0.9em">
         Your friendly assistant, ready to help you!
       </p>
-      <a id="adminButton" href="http://127.0.0.1:5000/admin"> View Tickets </a>
+      <div class="button-container">
+        <a id="adminButton" href="http://127.0.0.1:5000/admin"> View Tickets </a>
+        <button id="logOutBtn" onclick="handleLogOut()"> Log Out </button>
+      </div>
     </header>
 
     <div class="chatbot-button" onclick="toggleChatbot()" title="Open Chat">

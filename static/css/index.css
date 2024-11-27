@@ -122,27 +122,40 @@
 .chatbot-input button:hover {
   background-color: #0056b3;
 }
-#adminButton {
-  display: none;
+
+/* Parent container to hold both buttons side by side */
+.button-container {
+  display: flex;
+  flex-direction: row; /* Arrange buttons horizontally */
+  align-items: center; /* Vertically center align buttons */
   position: absolute;
   top: 30%;
   left: 15px;
   transform: translateY(-50%);
+  z-index: 999; /* Ensure they appear above other elements */
+  gap: 15px; /* Add space between buttons */
+}
+
+/* Common style for both buttons */
+#adminButton, #logOutBtn {
+  display: none;
   background-color: #007bff;
   color: white;
   text-decoration: none;
   padding: 10px 20px;
   font-weight: bold;
+  border: none; /* Remove border to avoid border issues */
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 16px; /* Larger text for better readability */
+  cursor: pointer;
 }
 
-#adminButton:hover {
+/* Hover effect for both buttons */
+#adminButton:hover, #logOutBtn:hover {
   background-color: #0056b3;
-  text-decoration: none;
-  font-weight: bolder;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
 header {

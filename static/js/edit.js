@@ -20,18 +20,18 @@ async function getPreFilledFormData() {
     if (response.ok) {
       const ticketData = await response.json();
       // console.log(ticketData.Status);
-      document.getElementById("userId").value = ticketData.User_ID || "";
+      document.getElementById("userId").value = ticketData.userid || "";
       document.getElementById("application").value =
-        ticketData.Application || "";
+        ticketData.application || "";
       document.getElementById("problemType").value =
-        ticketData.Problem_Type || "";
+        ticketData.problem_type || "";
       document.getElementById("problemDescription").value =
-        ticketData.Problem_Description || "";
+        ticketData.description || "";
 
       const statusRadios = document.getElementsByName("status");
       let i = 0;
       while (i < 3) {
-        if (statusRadios[i].value === ticketData.Status) {
+        if (statusRadios[i].value === ticketData.status) {
           statusRadios[i].checked = true;
           break;
         } else {
@@ -39,9 +39,9 @@ async function getPreFilledFormData() {
         }
       }
       // Storing for comparision in data change
-      originalData.problemType = ticketData.Problem_Type || "";
-      originalData.problemDescription = ticketData.Problem_Description || "";
-      originalData.status = ticketData.Status || "";
+      originalData.problemType = ticketData.problem_type || "";
+      originalData.problemDescription = ticketData.description || "";
+      originalData.status = ticketData.status || "";
     } else {
       const errorData = await response.json();
       alert(errorData.error || "Failed to fetch ticket details");

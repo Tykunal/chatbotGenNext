@@ -3,7 +3,7 @@ async function fetchTickets() {
     const response = await fetch("http://127.0.0.1:5000/adminData");
     const tickets = await response.json();
 
-    //   console.log(tickets[0]);
+      console.log(tickets[0]);
 
     const ticketsContainer = document.getElementById("tickets-container");
     ticketsContainer.innerHTML = "";
@@ -35,17 +35,17 @@ async function fetchTickets() {
 
         // Create cells for each ticket property
         row.innerHTML = `
-                                <td>${ticket["Ticket Number"]}</td>
-                                <td>${ticket["User_ID"]}</td>
-                                <td>${ticket["Application"]}</td>
-                                <td>${ticket["Problem_Type"]}</td>
-                                <td>${ticket["Problem_Description"]}</td>
-                                <td>${ticket["Status"]}</td>
+                                <td>${ticket["ticket_number"]}</td>
+                                <td>${ticket["userid"]}</td>
+                                <td>${ticket["application"]}</td>
+                                <td>${ticket["problem_Type"]}</td>
+                                <td>${ticket["description"]}</td>
+                                <td>${ticket["status"]}</td>
                                 <td>
-                                  <span class="icon" onclick="editTicket('${ticket["Ticket Number"]}')">
+                                  <span class="icon" onclick="editTicket('${ticket["ticket_number"]}')">
                                     <i class="fas fa-edit"></i> <!-- Edit Icon -->
                                   </span>
-                                  <span class="icon" onclick="deleteTicket('${ticket["Ticket Number"]}')">
+                                  <span class="icon" onclick="deleteTicket('${ticket["ticket_number"]}')">
                                     <i class="fas fa-trash-alt"></i> <!-- Delete Icon -->
                                   </span>
                                 </td>
@@ -72,7 +72,7 @@ async function editTicket(ticketNumber) {
 }
 
 async function deleteTicket(ticketNumber) {
-  if (confirm(`Are you sure you want to delete Ticket #${ticketNumber}?`)) {
+  if (confirm(`Are you sure you want to delete Ticket ${ticketNumber}?`)) {
     try {
       const response = await fetch(
         `http://127.0.0.1:5000/deleteTicket?ticketNumber=${ticketNumber}`,
