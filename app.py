@@ -346,6 +346,14 @@ def editTicket():
     else:
         return jsonify({"error": "Ticket not found"}), 404
 
+# Ensuring that the user doesnot have to relogin till the session exits.
+
+@app.route('/isLogged', methods=['GET'])
+def is_logged():
+    if session.get('userid'):
+        return jsonify({"isLoggedIn": True}), 200 
+    else:
+        return jsonify({"isLoggedIn": False}), 200
 
 
 if __name__ == '__main__':

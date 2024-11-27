@@ -236,6 +236,7 @@
     </div>
 
     <script>
+      isLoggedIn(); //checking if the session exists in backend
       const messagesDiv = document.getElementById("chatbot-messages");
       const userInput = document.getElementById("user-input");
       const sendBtn = document.querySelector(".chatbot-input button");
@@ -579,6 +580,21 @@
             resolve(input);
           };
         });
+      }
+      async function isLoggedIn() {
+        await fetch("http://127.0.0.1:5000/isLogged")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.isLoggedIn) {
+              isUserRegistered = true;
+            }
+            else{
+              isUserRegistered = false;
+            }
+          })
+          .catch((error) =>
+            console.error("Error fetching currentUser:", error)
+          );
       }
       async function getUser() {
         await fetch("http://127.0.0.1:5000/get_currentUser")
