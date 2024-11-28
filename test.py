@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 try:
     # start example code here
-    uri = "mongodb+srv://kunaltyagi00000:r0MxNeESPhuhlWsy@cluster0.dbdkr.mongodb.net/user?retryWrites=true&w=majority&appName=Cluster0"
+    uri = "yourURL"
     client = MongoClient(uri)
     db = client['user'] 
     userdetails_collection = db['Users']
