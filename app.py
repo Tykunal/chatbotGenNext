@@ -103,25 +103,6 @@ def chat():
             "tag": "New"
         })
 
-# def get_last_ticket_number():
-#     last_ticket_number = 0 
-
-#     try:
-#         with open('tickets.csv', mode='r') as file:
-#             reader = csv.DictReader(file)
-#             for row in reader:
-#                 last_ticket_number = row['Ticket Number']  # Get the ticket number from the last row
-            
-#         if last_ticket_number:
-#             last_ticket_number = int(last_ticket_number.split('-')[-1])
-#         else:
-#             last_ticket_number = 0 
-
-#     except FileNotFoundError:
-#         last_ticket_number = 0
-        
-#     return last_ticket_number + 1
-
 
 @app.route('/raiseTicket', methods=['POST'])
 # @cross_origin()
@@ -137,20 +118,16 @@ def raise_ticket():
     if existing_ticket:
         return jsonify({"reply": f"Your ticket {existing_ticket['ticket_number']} already exists with Status {existing_ticket['status']}."})
 
-    # Fetch the last inserted ticket number and sort it in descending order
-    last_ticket = tickets_collection.find_one(
-        {},                          # No filter, fetch all documents
-        sort=[("ticket_number", -1)]  # Sort by ticket_number in descending order
-    )
-    # Check if a ticket exists, and generate the next ticket number
-    if last_ticket and "ticket_number" in last_ticket:
+    last_ticket = tickets_collection.find().sort([("_id", -1)]).limit(1)
+    if last_ticket:
+        last_ticket = last_ticket[0]  # Get the first document from the list
         last_ticket_number = last_ticket["ticket_number"]
-        last_number = int(last_ticket_number.split('-')[1])  # Extract the numeric part
-        ticket_number = f"TICKET-{last_number + 1}"          # Increment by 1
+        last_number = int(last_ticket_number.split('-')[1])
+        ticket_number = f"TICKET-{last_number + 1}"
     else:
-        # If no ticket exists, start with TICKET-1
+        # If "ticket_number" is not present in the last ticket, start with TICKET-1
         ticket_number = "TICKET-1"
-
+    
     # Store the ticket information in a CSV file
     # print(currentUser)
     ticket_data = {
@@ -166,16 +143,6 @@ def raise_ticket():
     return jsonify({
         "reply": f"Your ticket is generated and ticket number is {ticket_number}, for application {application}. Thanks for visiting"
     })
-
-# def ticket_exists(problem_type):
-#     with open('tickets.csv', mode='r') as file:
-#         reader = csv.DictReader(file)
-#         currentUser = session.get('userid')
-#         for row in reader:
-#             if row['User_ID'] == currentUser and row['Problem_Type'] == problem_type:
-#                 return row['Ticket Number'], row['Status']
-#     return None
-
 
 @app.route('/registerUser', methods=['POST'])
 def register_user():

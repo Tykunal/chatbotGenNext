@@ -1,4 +1,8 @@
 /* Floating button remains the same */
+body {
+  margin: 0px;
+  padding: 0px;
+}
 .chatbot-button {
   position: fixed;
   bottom: 20px;
