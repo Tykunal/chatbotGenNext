@@ -19,7 +19,6 @@ cffi==1.16.0
 charset-normalizer==3.3.2
 click==8.1.7
 comm==0.2.2
-command-not-found==0.3
 contourpy==1.2.1
 cryptography==3.4.8
 cycler==0.12.1
