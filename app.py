@@ -370,5 +370,6 @@ def logOut():
 
 
 if __name__ == '__main__':
-    # app.run(debug=True) #while dealing with local development
-    app.run(host='0.0.0.0', port=5000) #for Production
+    # app.run(debug=True) # while dealing with local development
+    port = int(os.getenv("PORT", 5000))  # Convert to integer and use 5000 as default
+    app.run(host='0.0.0.0', port=port)  # Specify the port correctly
