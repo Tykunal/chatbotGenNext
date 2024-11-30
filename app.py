@@ -229,41 +229,6 @@ def adminData():
 
 # deletion and updation logic
 
-# @app.route('/deleteTicket', methods=['DELETE'])
-# def delete_ticket():
-#     ticket_number = request.args.get('ticketNumber')
-#     try:
-#         tickets = []
-#         with open("tickets.csv", "r") as file:
-#             reader = csv.DictReader(file)
-#             tickets = list(reader)
-
-#         # Check if the ticket exists and remove it
-#         ticket_found = False
-#         updated_tickets = []
-#         for ticket in tickets:
-#             if ticket["Ticket Number"] == ticket_number:
-#                 ticket_found = True
-#             else:
-#                 updated_tickets.append(ticket)
-
-#         if not ticket_found:
-#             return jsonify({"error": f"Ticket {ticket_number} not found."}), 404
-
-#         # Write the updated tickets back to the CSV file
-#         with open("tickets.csv", "w", newline="") as file:
-#             fieldnames = ["Ticket Number", "User_ID", "Application", "Problem_Type", "Problem_Description", "Status"]
-#             writer = csv.DictWriter(file, fieldnames=fieldnames)
-#             writer.writeheader()
-#             writer.writerows(updated_tickets)
-
-#         return jsonify({"message": f"Ticket {ticket_number} deleted successfully."}), 200
-
-#     except FileNotFoundError:
-#         return jsonify({"error": "Tickets file not found."}), 500
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
-
 @app.route('/deleteTicket', methods=['DELETE'])
 def delete_ticket():
     ticket_number = request.args.get('ticketNumber')
@@ -370,6 +335,8 @@ def logOut():
 
 
 if __name__ == '__main__':
-    # app.run(debug=True) # while dealing with local development
-    port = int(os.getenv("PORT", 5000))  # Convert to integer and use 5000 as default
-    app.run(host='0.0.0.0', port=port)  # Specify the port correctly
+    app.run(debug=True) # while dealing with local development
+    # port = int(os.getenv("PORT", 5000))  # Convert to integer and use 5000 as default
+    # app.run(host='0.0.0.0', port=port)  # Specify the port correctly
+
+
