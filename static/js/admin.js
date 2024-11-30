@@ -3,7 +3,7 @@ async function fetchTickets() {
     const response = await fetch("http://127.0.0.1:5000/adminData");
     const tickets = await response.json();
 
-      console.log(tickets[0]);
+      console.log(tickets[0].problem_type);
 
     const ticketsContainer = document.getElementById("tickets-container");
     ticketsContainer.innerHTML = "";
@@ -38,7 +38,7 @@ async function fetchTickets() {
                                 <td>${ticket["ticket_number"]}</td>
                                 <td>${ticket["userid"]}</td>
                                 <td>${ticket["application"]}</td>
-                                <td>${ticket["problem_Type"]}</td>
+                                <td>${ticket["problem_type"]}</td>
                                 <td>${ticket["description"]}</td>
                                 <td>${ticket["status"]}</td>
                                 <td>
