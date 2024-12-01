@@ -15,7 +15,6 @@ function toggleChatbot() {
   }
 }
 
-// Send message when button is clicked
 async function sendMessage() {
   // console.log("Send Message function is getting called.");
   const userMessage = userInput.value.trim();
@@ -64,11 +63,43 @@ async function sendMessage() {
               body: JSON.stringify({
                 tag: data.tag,
                 description: userMessage,
+                confirm:false
               }),
             })
               .then((response) => response.json())
-              .then((ticketData) => {
+              .then(async (ticketData) => {
                 addMessage(ticketData.reply, "bot-message");
+                if(ticketData.question){
+                  addMessage(ticketData.question, "user-message");
+                  const confirmationResponse = await waitForUserInput();
+                  addMessage(confirmationResponse, "user-message");
+                  
+                  if(confirmationResponse.toLowerCase() === "yes"){
+                    await fetch("http://127.0.0.1:5000/raiseTicket",{
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        tag:data.tag,
+                        description: userMessage,
+                        confirm: true,
+                      }),
+                    })
+                      .then((finalResponse)=> finalResponse.json())
+                      .then((finalData) =>{
+                        addMessage(finalData.reply, "bot-message");
+                      })
+                      .catch((error)=>{
+                        addMessage("Error: Unable to confirm ticket creation.", "bot-message")
+                        console.error("Error:", error);
+                      });
+                  }
+                  else{
+                    addMessage("Hope your problem is solved. Thanks for visiting!",
+                      "bot-message");
+                  }
+                }
               })
               .catch((error) => {
                 addMessage("Error: Unable to raise ticket.", "bot-message");
@@ -100,6 +131,7 @@ async function sendMessage() {
               body: JSON.stringify({
                 tag: data.tag,
                 description: userMessage,
+                confirm: true
               }),
             })
               .then((response) => response.json())
@@ -136,6 +168,7 @@ async function sendMessage() {
       sendBtn.disabled = false;
     });
 }
+
 userInput.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
     event.preventDefault();
@@ -369,7 +402,7 @@ async function handleLogOut() {
       const data = await response.json();
       alert(data.message);
       // Optionally redirect to login page or refresh the page
-      window.location.href = '/';
+      window.location.href = "/";
     } else {
       const errorData = await response.json();
       alert(errorData.error || "Error logging out");

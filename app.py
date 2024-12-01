@@ -11,6 +11,11 @@ from dotenv import load_dotenv
 import os
 from pymongo import MongoClient
 
+from preprocess import preprocess_text
+from transformer_embeddings import transformer_embeddings
+from similarity import calculate_similarity
+
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -104,20 +109,66 @@ def chat():
         })
 
 
+def existing_ticket(input_sentence,stored_statements):
+    # Preprocess input
+    input_sentence_processed = " ".join(preprocess_text(input_sentence, use_stemming=False))
+    stored_statements_processed = [" ".join(preprocess_text(s, use_stemming=False)) for s in stored_statements]
+
+        # Generate embeddings
+    input_embedding = transformer_embeddings([input_sentence_processed])[0]
+    stored_embeddings = transformer_embeddings(stored_statements_processed)
+
+    # Calculate similarity
+    similarity_results = calculate_similarity(input_embedding, stored_embeddings, stored_statements)
+
+    # Find the maximum cosine similarity
+    max_similarity_result = max(similarity_results, key=lambda x: x['cosine_similarity'])
+    max_similarity_percentage = max_similarity_result['cosine_similarity'] # Convert to percentage
+    best_matching_statement = max_similarity_result['statement']
+
+    # Output the result
+    print(f"Best Matching Statement: {best_matching_statement}")
+    print(f"Cosine Similarity: {max_similarity_percentage:.2f}%")
+    sentenceMatched = best_matching_statement
+    percent = max_similarity_percentage
+    if percent>60:
+        return True, sentenceMatched
+    else:
+        return False, ""
+
 @app.route('/raiseTicket', methods=['POST'])
 # @cross_origin()
 def raise_ticket():
     data = request.get_json()
     problem_type = data.get("tag")
     description = data.get("description")
+    confirm = data.get("confirm")  # Check for the confirmation flag
     currentUser = session.get('userid')
     user_document = users_collection.find_one({"userid": session.get('userid')})
     application = user_document.get('application')
 
-    existing_ticket = tickets_collection.find_one({"userid": currentUser, "problem_type": problem_type})
-    if existing_ticket:
-        return jsonify({"reply": f"Your ticket {existing_ticket['ticket_number']} already exists with Status {existing_ticket['status']}."})
+    # existing_ticket = tickets_collection.find_one({"userid": currentUser, "problem_type": problem_type})
+    # if existing_ticket:
+    #     return jsonify({
+    #     "reply": f"Your ticket is generated and ticket number is {ticket_number}, for application {application}. Thanks for visiting"
+    # })
+    matchingDesc = tickets_collection.find({"userid": currentUser, "problem_type": problem_type})
+    descList = []
+    for d in matchingDesc:
+        descList.append(d.get('description'))
 
+    result, statement = existing_ticket(description, descList)
+    if result and not confirm:
+        print(f"A ticket with a similar description already exists: {statement}. Do you still want to raise a new ticket? (yes/no)")
+        return jsonify({
+            "reply": f"A ticket with a similar description already exists: '{statement}'.",
+            "question": "Do you still want to raise a new ticket? (yes/no)"
+        })
+
+    if result and confirm:
+        print("User confirmed to create a new ticket despite similar occurrence.")
+
+    
     last_ticket = tickets_collection.find().sort([("_id", -1)]).limit(1)
     if last_ticket:
         last_ticket = last_ticket[0]  # Get the first document from the list
@@ -128,7 +179,6 @@ def raise_ticket():
         # If "ticket_number" is not present in the last ticket, start with TICKET-1
         ticket_number = "TICKET-1"
     
-    # Store the ticket information in a CSV file
     # print(currentUser)
     ticket_data = {
         "ticket_number": ticket_number,
@@ -338,5 +388,4 @@ if __name__ == '__main__':
     app.run(debug=True) # while dealing with local development
     # port = int(os.getenv("PORT", 5000))  # Convert to integer and use 5000 as default
     # app.run(host='0.0.0.0', port=port)  # Specify the port correctly
-
 
