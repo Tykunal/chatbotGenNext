@@ -63,41 +63,45 @@ async function sendMessage() {
               body: JSON.stringify({
                 tag: data.tag,
                 description: userMessage,
-                confirm:false
+                confirm: false,
               }),
             })
               .then((response) => response.json())
               .then(async (ticketData) => {
-                addMessage(ticketData.reply, "bot-message");
-                if(ticketData.question){
+                addMessage(ticketData.reply, "bot-message")
+                if (ticketData.question) {
                   addMessage(ticketData.question, "user-message");
                   const confirmationResponse = await waitForUserInput();
                   addMessage(confirmationResponse, "user-message");
-                  
-                  if(confirmationResponse.toLowerCase() === "yes"){
-                    await fetch("http://127.0.0.1:5000/raiseTicket",{
+
+                  if (confirmationResponse.toLowerCase() === "yes") {
+                    await fetch("http://127.0.0.1:5000/raiseTicket", {
                       method: "POST",
                       headers: {
                         "Content-Type": "application/json",
                       },
                       body: JSON.stringify({
-                        tag:data.tag,
+                        tag: data.tag,
                         description: userMessage,
                         confirm: true,
                       }),
                     })
-                      .then((finalResponse)=> finalResponse.json())
-                      .then((finalData) =>{
+                      .then((finalResponse) => finalResponse.json())
+                      .then((finalData) => {
                         addMessage(finalData.reply, "bot-message");
                       })
-                      .catch((error)=>{
-                        addMessage("Error: Unable to confirm ticket creation.", "bot-message")
+                      .catch((error) => {
+                        addMessage(
+                          "Error: Unable to confirm ticket creation.",
+                          "bot-message"
+                        );
                         console.error("Error:", error);
                       });
-                  }
-                  else{
-                    addMessage("Hope your problem is solved. Thanks for visiting!",
-                      "bot-message");
+                  } else {
+                    addMessage(
+                      "Hope your problem is solved. Thanks for visiting!",
+                      "bot-message"
+                    );
                   }
                 }
               })
@@ -131,7 +135,7 @@ async function sendMessage() {
               body: JSON.stringify({
                 tag: data.tag,
                 description: userMessage,
-                confirm: true
+                confirm: true,
               }),
             })
               .then((response) => response.json())

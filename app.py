@@ -120,21 +120,50 @@ def existing_ticket(input_sentence,stored_statements):
 
     # Calculate similarity
     similarity_results = calculate_similarity(input_embedding, stored_embeddings, stored_statements)
-
-    # Find the maximum cosine similarity
-    max_similarity_result = max(similarity_results, key=lambda x: x['cosine_similarity'])
-    max_similarity_percentage = max_similarity_result['cosine_similarity'] # Convert to percentage
-    best_matching_statement = max_similarity_result['statement']
-
-    # Output the result
-    print(f"Best Matching Statement: {best_matching_statement}")
-    print(f"Cosine Similarity: {max_similarity_percentage:.2f}%")
-    sentenceMatched = best_matching_statement
-    percent = max_similarity_percentage
-    if percent>60:
+    # Separate cases based on similarity
+    high_similarity = []
+    medium_similarity = []
+    
+    for result in similarity_results:
+        cosine_similarity_percentage = result['cosine_similarity']  # Convert to percentage
+        if cosine_similarity_percentage > 80:
+            high_similarity.append(result)
+        elif 50 <= cosine_similarity_percentage <= 80:
+            medium_similarity.append(result)
+            
+    # Output results
+    
+    if high_similarity:
+        # Find the highest similarity statement
+        max_high_similarity = max(high_similarity, key=lambda x: x['cosine_similarity'])
+        max_high_statement = max_high_similarity['statement']
+        max_high_value = max_high_similarity['cosine_similarity'] # Convert to percentage
+        sentenceMatched = max_high_statement
+        print(f"Highest Matching Statement: {max_high_statement}")
+        print(f"Cosine Similarity: {max_high_value:.2f}%")
         return True, sentenceMatched
     else:
-        return False, ""
+        if medium_similarity:
+            arrayMatched = []
+            print("Statements with Similarity between 50% and 80%:")
+            for result in medium_similarity:
+                statement = result['statement']
+                similarity_value = result['cosine_similarity']# Convert to percentage
+                print(f"Statement: {statement}, Similarity: {similarity_value:.2f}%")
+                arrayMatched.append(statement)
+            print(arrayMatched)
+            return True, arrayMatched
+        else:
+            return False, ""
+            
+
+    
+    # sentenceMatched = best_matching_statement
+    # percent = max_similarity_percentage
+    # if percent>60:
+    #     return True, sentenceMatched
+    # else:
+    #     return False, ""
 
 @app.route('/raiseTicket', methods=['POST'])
 # @cross_origin()
@@ -156,15 +185,35 @@ def raise_ticket():
     descList = []
     for d in matchingDesc:
         descList.append(d.get('description'))
+    # descList = ['i am facing payments issue', 'i am having payments issues', 'facing error in payments','dealing errors in payments']
 
     result, statement = existing_ticket(description, descList)
+    # if result and not confirm:
+    #     if type(statement) != list:
+    #         # print(f"A ticket with a similar description already exists: {statement}. Do you still want to raise a new ticket? (yes/no)")
+    #         return jsonify({
+    #             "reply": f"A ticket with a similar description already exists: '{statement}'.",
+    #             "question": "Do you still want to raise a new ticket? (yes/no)"
+    #         })
+    #     else:
+    #         # print(f"A ticket with a similar description already exists: {statement}. Do you still want to raise a new ticket? (yes/no)")
+    #         return jsonify({
+    #             "reply": f"A ticket with a similar description already exists: '{statement}'.",
+    #             "question": "Do you still want to raise a new ticket? (yes/no)"
+    #         })
     if result and not confirm:
-        print(f"A ticket with a similar description already exists: {statement}. Do you still want to raise a new ticket? (yes/no)")
-        return jsonify({
-            "reply": f"A ticket with a similar description already exists: '{statement}'.",
-            "question": "Do you still want to raise a new ticket? (yes/no)"
-        })
-
+        if isinstance(statement, list):
+            statements_formatted = "\n".join(f"{i + 1}. {s}" for i, s in enumerate(statement))
+            return jsonify({
+                "reply": f"Tickets with similar descriptions already exist:\n\n{statements_formatted}",
+                "question": "Do you still want to raise a new ticket? (yes/no)"
+            })
+        else:
+            return jsonify({
+                "reply": f"A ticket with a highly similar description already exists: '{statement}'.",
+                "question": "Do you still want to raise a new ticket? (yes/no)"
+            })
+        
     if result and confirm:
         print("User confirmed to create a new ticket despite similar occurrence.")
 
